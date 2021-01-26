@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.StockInfoItem.mapper.StockInfoItemMapper">
+
+    <resultMap type="com.ruoyi.project.system.StockInfoItem.domain.StockInfoItem" id="StockInfoItemResult">
+        <result property="id" column="id"/>
+        <result property="sysTime" column="sys_time"/>
+        <result property="userId" column="user_id"/>
+        <result property="stockInfoId" column="stock_info_id"/>
+        <result property="shopeeOrderNo" column="shopee_order_no"/>
+        <result property="packageNo" column="package_no"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsImageUrl" column="goods_Image_Url"/>
+        <result property="goodsCount" column="goods_count"/>
+        <result property="itemType" column="item_type"/>
+        <result property="stockItemStatus" column="stock_item_status"/>
+    </resultMap>
+
+    <sql id="selectStockInfoItemVo">
+        select item.id, item.sys_time, item.user_id, item.stock_info_id, item.shopee_order_no, item.package_no, item.category_name, item.goods_name,
+        item.goods_Image_Url, item.goods_count, item.item_type, item.stock_item_status from stock_info_item item
+    </sql>
+
+    <select id="selectStockInfoItemList" parameterType="StockInfoItem" resultMap="StockInfoItemResult">
+        <include refid="selectStockInfoItemVo"/>
+        left join sys_user u on item.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            <if test="userId != null ">and item.user_id = #{userId}</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">and item.shopee_order_no = #{shopeeOrderNo}</if>
+            <if test="packageNo != null  and packageNo != ''">and package_no like concat('%', #{packageNo}, '%')</if>
+            <if test="categoryName != null  and categoryName != ''">and item.category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="goodsName != null  and goodsName != ''">and item.goods_name like concat('%', #{goodsName}, '%')</if>
+            <if test="itemType != null ">and item.item_type = #{itemType}</if>
+            <if test="stockItemStatus != null ">and item.stock_item_status = #{stockItemStatus}</if>
+            <if test="params.beginSysTime != null and params.beginSysTime !=''">and DATE (sys_time) &gt;= #{params.beginSysTime}</if>
+            <if test="params.endSysTime != null and params.endSysTime !=''">and DATE (sys_time) &lt;= #{params.endSysTime}</if>
+            <if test="params.dataScope != null and params.dataScope !=''">${params.dataScope}</if>
+        </where>
+        order by id desc
+    </select>
+    <select id="selectStockInfoItemByPackageNo" resultMap="StockInfoItemResult">
+        <include refid="selectStockInfoItemVo"/>
+        <where>
+            <if test="packageNo != null  and packageNo != ''">and item.package_no=#{packageNo}</if>
+            <if test="stockItemStatus != null ">and item.stock_item_status = #{stockItemStatus}</if>
+        </where>
+        order by id desc
+    </select>
+    <select id="selectStockInfoItemById" parameterType="Long" resultMap="StockInfoItemResult">
+        <include refid="selectStockInfoItemVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockInfoItem" parameterType="StockInfoItem" useGeneratedKeys="true" keyProperty="id">
+        insert into stock_info_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="sysTime != null ">sys_time,</if>
+            <if test="userId != null ">user_id,</if>
+            <if test="stockInfoId != null ">stock_info_id,</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no,</if>
+            <if test="packageNo != null  and packageNo != ''">package_no,</if>
+            <if test="categoryName != null  and categoryName != ''">category_name,</if>
+            <if test="goodsName != null  and goodsName != ''">goods_name,</if>
+            <if test="goodsImageUrl != null  and goodsImageUrl != ''">goods_Image_Url,</if>
+            <if test="goodsCount != null ">goods_count,</if>
+            <if test="itemType != null ">item_type,</if>
+            <if test="stockItemStatus != null ">stock_item_status,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="sysTime != null ">#{sysTime},</if>
+            <if test="userId != null ">#{userId},</if>
+            <if test="stockInfoId != null ">#{stockInfoId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">#{shopeeOrderNo},</if>
+            <if test="packageNo != null  and packageNo != ''">#{packageNo},</if>
+            <if test="categoryName != null  and categoryName != ''">#{categoryName},</if>
+            <if test="goodsName != null  and goodsName != ''">#{goodsName},</if>
+            <if test="goodsImageUrl != null  and goodsImageUrl != ''">#{goodsImageUrl},</if>
+            <if test="goodsCount != null ">#{goodsCount},</if>
+            <if test="itemType != null ">#{itemType},</if>
+            <if test="stockItemStatus != null ">#{stockItemStatus},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockInfoItem" parameterType="StockInfoItem">
+        update stock_info_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="sysTime != null ">sys_time = #{sysTime},</if>
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="stockInfoId != null ">stock_info_id = #{stockInfoId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no = #{shopeeOrderNo},</if>
+            <if test="packageNo != null  and packageNo != ''">package_no = #{packageNo},</if>
+            <if test="categoryName != null  and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="goodsName != null  and goodsName != ''">goods_name = #{goodsName},</if>
+            <if test="goodsImageUrl != null  and goodsImageUrl != ''">goods_Image_Url = #{goodsImageUrl},</if>
+            <if test="goodsCount != null ">goods_count = #{goodsCount},</if>
+            <if test="itemType != null ">item_type = #{itemType},</if>
+            <if test="stockItemStatus != null ">stock_item_status = #{stockItemStatus},</if>
+
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockInfoItemById" parameterType="Long">
+        delete from stock_info_item where id = #{id}
+    </delete>
+
+    <delete id="deleteStockInfoItemByIds" parameterType="String">
+        delete from stock_info_item where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateStatusById">
+        update stock_info_item
+        set stock_item_status=#{stockItemStatus}
+        where id = #{id}
+    </update>
+    <select id="selectByShopeeOrderNoAndStockInfoId" resultMap="StockInfoItemResult">
+        <include refid="selectStockInfoItemVo"/>
+        where shopee_order_no = #{shopeeOrderNo} and stock_info_id=#{stockInfoId}
+    </select>
+</mapper>

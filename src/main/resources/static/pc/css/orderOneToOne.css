@@ -1,0 +1,50 @@
+.jfa-content label {
+    line-height: 1;
+    vertical-align: baseline;
+    color: #23527c;
+    font-size: 20px;
+    font-weight: normal;
+    margin-bottom: 8px;;
+}
+input[type="file"]{
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    text-align: right;
+    background: none;
+    cursor: inherit;
+    opacity: 0;
+    display: block;
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+}
+.input_change{
+    display: flex;
+}
+.input_change{
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: absolute;
+    top: 0px;
+    width: 93.2%;
+}
+.input_change_input1{
+    border:0;
+    border-radius: 4px;
+}
+.input_change>input[type="button"]{
+    border:0;
+    border-radius: 0px;
+    color: #fff;
+    background-color: #337ab7;
+    padding: 0 5px;
+}
+.cbes_file{
+    position: relative;
+}
+.content-fieldset{
+    margin-top:20px;
+    padding-left:15px;
+}

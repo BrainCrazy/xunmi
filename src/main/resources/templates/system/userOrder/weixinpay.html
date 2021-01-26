@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('审核')" />
+</head>
+<body style="background:#fff">
+<!-- header -->
+<div class="headerpage"></div>
+<!-- body -->
+<div class="content-body" style="min-height: 672px; margin:60px auto">
+	<div class="body-title" style="display: inline-block;position: relative;left:50%;transform: translateX(-50%);font-size:30px;color:red;"><div>支付金额：<p
+			style="display:inline;font-size:30px;color:red;text-align: center;" th:text="${amount}"></p>元
+			</div>
+	</div>
+	<div class="form-content">
+		<p style="text-align: center;"><img src="" alt="" id="code"></p>
+		<p style="text-align: center;">请打开微信扫描二维码支付</p>
+	</div>
+	<div style="border: 1px solid #eee;  background: #fff;" id="body-containerList">
+		<!--<div class="list-item">-->
+		<!--<div class="shopItem">-->
+		<!--<div>-->
+		<!--<img src="" id="photoImg" style='width:148px;height:99px;' alt="">-->
+		<!--</div>-->
+		<!--<div style="margin-left:20px;">-->
+		<!--<p id="gname"  class="title"></p>-->
+		<!--<p  class="Teacher">讲师：<span id="tname" ></span></p>-->
+		<!--<p class="Teacher">销售量：<span  id="styNum"></span></p>-->
+		<!--</div>-->
+		<!--</div>-->
+		<!--<div style="width:10%;font-size:25px;color: #f13939;" ><span  id="price"></span>元</div>-->
+		<!--</div>-->
+	</div>
+
+</div>
+
+
+</body>
+	<div th:include="include::footer"></div>
+	<script>
+        var URL ='[[${code_url}]]';
+        console.log(URL)
+        $(function(){
+            $("#code").prop("src",ctx+"system/userOrder/getQRCode?code_url="+URL+"");
+
+        })
+	</script>
+
+</html>

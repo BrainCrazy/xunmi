@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订单详情')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <br>
+    <h3 style="text-align: center">以下为该订单需要发送的商品信息</h3>
+    <br>
+    <form id="formId">
+        <input type="hidden" name="shopeeOrderNo" id="shopeeOrderNo" th:value="${shopeeOrderNo}">
+        <input type="hidden" name="id" id="id" th:value="${id}">
+        <input type="hidden" id="weightFlag" th:value="${weightFlag}">
+        <div class="form-group">
+            <label class="col-sm-2 control-label" style="line-height: 34px" th:text="虾皮订单号：+${shopeeOrderNo}"></label>
+            <label th:if="${weightFlag} == 10" class="col-sm-1 control-label" style="line-height: 34px">包裹重量(kg)：</label>
+            <div class="col-sm-1" th:if="${weightFlag} == 10">
+                <input name="weight" id="weight" class="form-control" type="text" style="line-height: 34px">
+            </div>
+            <label class="col-sm-2 control-label" style="line-height: 34px;text-align: center">上传发货包裹图片：</label>
+            <div class="col-sm-3">
+                <input name="stockImage" id="stockImage" class="form-control stockImage" type="file"
+                       accept="image/png, image/jpeg, image/gif, image/jpg" onchange="showImage(this)"/>
+                <img src="" class="showImage" style="display: none">
+            </div>
+            <label class="col-sm-1 control-label" style="line-height: 34px">
+                <a class="yellowColor inlineMargin" style="color: red;font-size: 16px;" id="downloadBtn" href="">下载面单</a>
+            </label>
+        </div>
+    </form>
+
+
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/unpackage";
+    $(function () {
+        $('#downloadBtn').attr('href', prefix + '/download?id=' + $('#id').val());
+        var options = {
+            url: prefix + "/orderDetail",
+            search: false,
+            showToggle: false,
+            showRefresh: false,
+            showSearch: false,
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'goodsImage',
+                title: '缩略图',
+                formatter: function (value, row, index) {
+                    return $.table.imageView(value, '800px', '800px');
+                }
+            },
+                {
+                    field: 'id',
+                    title: '商品id'
+                },
+                {
+                    field: 'userId',
+                    title: '用户id',
+                },
+                {
+                    field: 'categoryName',
+                    title: '分类'
+                },
+                {
+                    field: 'goodsName',
+                    title: '名称'
+                },
+                {
+                    field: 'variationName',
+                    title: '规格'
+                },
+                {
+                    field: 'goodsCount',
+                    title: '数量'
+                },
+                {
+                    field: 'packageNo',
+                    title: '运单号'
+                }, {
+                    field: 'stockImage',
+                    title: '仓库图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                },]
+        };
+        $.table.init(options);
+    });
+
+    function showImage(ele) {
+        p = $(ele).next();
+        if (undefined == $(ele)[0].files[0]) {
+            $(p).css("display", "none")
+        } else {
+            $(p).attr('src', URL.createObjectURL($(ele)[0].files[0]));
+            $(p).css("display", "block")
+        }
+    };
+
+    function submitHandler() {
+        var flag = true;
+        var formData = new FormData();
+        var weight = $('#weight').val();
+        if (weight == '') {
+            $.modal.alertError("重量必须填写!");
+            return;
+        }
+        if (weight == undefined) {
+            weight = "-";
+        }
+        formData.append('shopeeOrderNo', $('#shopeeOrderNo').val());
+        formData.append('weight', weight);
+        $('.stockImage').each(function () {
+            if (undefined == $(this)[0].files[0]) {
+                flag = false;
+                return false;
+            }
+            formData.append('stockImage', $(this)[0].files[0]);
+        })
+        if (!flag) {
+            $.modal.alertError("图片必须上传，请选择图片！");
+            return;
+        }
+        $.ajax({
+            url: prefix + "/saveoutStock",
+            type: 'post',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (result) {
+                $.operate.successCallback(result);
+            }
+        });
+    }
+</script>
+</body>
+</html>

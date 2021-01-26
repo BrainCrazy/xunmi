@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('库存管理列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <input type="hidden" th:value="${shopeeOrderNo}" id="shopeeOrderNo">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>商品类别：</p>
+                            <input type="text" name="categoryName"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="goodsName"/>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/StockInfo";
+    var prefixOrder = ctx + "system/stockOrder";
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefixOrder + "/editGoodsCount/{id}",
+            modalName: "订单",
+            columns: [
+                {
+                    field: 'categoryName',
+                    title: '商品类别'
+                },
+                {
+                    field: 'goodsName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'goodsImageUrl',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                },
+                {
+                    field: 'goodsCount',
+                    title: '库存量'
+                },
+                {
+                    field: 'pendigStorageCount',
+                    title: '待入库数量'
+                },
+                {
+                    field: 'outStorageCount',
+                    title: '待出库数量'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        id = row.id + "-" + $('#shopeeOrderNo').val();
+                        actions.push('<a class="yellowColor inlineMargin" href="javascript:void(0)" onclick="$.operate.edit(\'' + id + '\')">增加到订单</a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+    function submitHandler() {
+        $.modal.close();
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('审核')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" th:action="@{/system/userOrder/pay}" method="post" id="form-user-chongzhi"
+    >
+        <input type="hidden" name="type" value="0">
+        <div class="form-group " id="aaa">
+            <label class="col-sm-3 control-label">请输入充值金额：</label>
+            <div class="col-sm-8">
+                <input id="amount" name="amount" class="form-control" type="text">
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label ">支付方式：</label>
+            <div class="col-sm-8">
+               <!-- <label class="radio-box">
+                    <input type="radio" checked="" value="0"
+                           name="payType"
+                           style="position: absolute;
+						opacity: 0;">
+                    微信</label>-->
+                <label class="radio-box">
+                    <input type="radio" checked="checked" value="1" name="payType"
+                           style="position: absolute;
+						opacity: 0;">
+                    <ins class="iCheck-helper"
+                         style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins>
+                    支付宝</label>
+
+            </div>
+
+        </div>
+
+    </form>
+    <!--<div class="lijipay" style="text-align: center;">立即支付</div>-->
+    <div class="lijipay" style="text-align: center;"><input class="btn btnClass" type="button" value="立即支付"/></div>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+    $(".lijipay").on("click", function () {
+        if ($("#amount").val() !== "" && (/^[1-9]\d*$/.test($("#amount").val()))) {
+            $("#form-user-chongzhi").submit();
+        } else {
+            $.modal.alertError("请输入正确金额！");
+        }
+
+    })
+
+</script>
+</body>
+
+</html>

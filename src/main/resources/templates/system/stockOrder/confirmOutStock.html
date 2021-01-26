@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('库存明细列表')"/>
+</head>
+<body class="gray-bg">
+<form class="form-horizontal m" id="form-outStock-confirm">
+    <input name="id" th:value="${id}" type="hidden">
+</form>
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/StockInfoItem";
+    var prefixOrder = ctx + "system/stockOrder";
+    var shopeeOrderNo = [[${shopeeOrderNo}]];
+    $(function () {
+        var options = {
+            url: prefix + "/itemList/" + shopeeOrderNo,
+            modalName: "",
+            columns: [
+                {
+                    field: 'shopeeOrderNo',
+                    title: '虾皮订单号'
+                },
+                {
+                    field: 'categoryName',
+                    title: '商品类别'
+                },
+                {
+                    field: 'goodsName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'goodsImageUrl',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                },
+                {
+                    field: 'goodsCount',
+                    title: '商品数量'
+                },]
+        };
+        $.table.init(options);
+    });
+
+    function submitHandler() {
+        $.operate.save(prefixOrder + "/outStock", $('#form-outStock-confirm').serialize());
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.item.mapper.HdCategoryMapper">
+  <resultMap id="BaseResultMap" type="com.ruoyi.project.system.item.domain.HdCategory">
+    <id column="category_id" jdbcType="BIGINT" property="categoryId" />
+    <result column="category_name" jdbcType="VARCHAR" property="categoryName" />
+    <result column="has_children" jdbcType="BIT" property="hasChildren" />
+    <result column="parent_id" jdbcType="BIGINT" property="parentId" />
+    <result column="min_limit" jdbcType="INTEGER" property="minLimit" />
+    <result column="max_limit" jdbcType="INTEGER" property="maxLimit" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    category_id, category_name, has_children, parent_id, min_limit, max_limit
+  </sql>
+  <insert id="insert">
+    INSERT INTO hd_category(`category_id`, `category_name`, `has_children`, `parent_id`, `min_limit`, `max_limit`)
+    VALUES (#{categoryId}, #{categoryName}, #{hasChildren}, #{parentId}, #{minLimit}, #{maxLimit});
+  </insert>
+  <update id="update">
+    update hd_category
+    set
+    category_name = #{categoryName},
+    has_children = #{hasChildren},
+    parent_id = #{parentId},
+    min_limit = #{minLimit},
+    max_limit = #{maxLimit}
+    where category_id = #{categoryId}
+  </update>
+
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from hd_category
+    where category_id = #{categoryId,jdbcType=BIGINT}
+  </select>
+    <select id="selectIdByIds" resultType="java.lang.Long">
+      select category_id
+      from hd_category
+       where category_id
+       <foreach collection="collect" item="id" separator="," open="in(" close=")">
+         #{id}
+       </foreach>
+    </select>
+</mapper>

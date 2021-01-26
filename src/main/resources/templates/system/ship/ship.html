@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('待处理订单列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>订单id：</p>
+                            <input type="text" name="orderId"/>
+                        </li>
+                        <li>
+                            <p>店铺id：</p>
+                            <input type="text" name="shopId"/>
+                        </li>
+                        <!--                        <li>-->
+                        <!--                            <p>用户id：</p>-->
+                        <!--                            <input type="text" name="userId"/>-->
+                        <!--                        </li>-->
+                        <!--                        <li class="select-time">-->
+                        <!--                            <p>订单创建时间：</p>-->
+                        <!--                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"-->
+                        <!--                                   name="params[beginOrderCreateTime]"/>-->
+                        <!--                            <span>-</span>-->
+                        <!--                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"-->
+                        <!--                                   name="params[endOrderCreateTime]"/>-->
+                        <!--                        </li>-->
+                        <!--                        <li class="select-time">-->
+                        <!--                            <p>订单修改时间：</p>-->
+                        <!--                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"-->
+                        <!--                                   name="params[beginOrderUpdateTime]"/>-->
+                        <!--                            <span>-</span>-->
+                        <!--                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"-->
+                        <!--                                   name="params[endOrderUpdateTime]"/>-->
+                        <!--                        </li>-->
+                        <!--                        <li>-->
+                        <!--                            <p>是否为货到付款订单</p>-->
+                        <!--                            <select name="cod">-->
+                        <!--                                <option value="">未选择</option>-->
+                        <!--                                <option value="true">true</option>-->
+                        <!--                                <option value="false">false</option>-->
+                        <!--                            </select>-->
+                        <!--                        </li>-->
+                        <!--                        <li>-->
+                        <!--                            <p>是否海关申报</p>-->
+                        <!--                            <select name="goodsToDeclare">-->
+                        <!--                                <option value="">未选择</option>-->
+                        <!--                                <option value="true">T</option>-->
+                        <!--                                <option value="false">P</option>-->
+                        <!--                            </select>-->
+                        <!--                        </li>-->
+                        <!--                        <li>-->
+                        <!--                            <p>给卖方的消息：</p>-->
+                        <!--                            <input type="text" name="messageToSeller"/>-->
+                        <!--                        </li>-->
+                        <li>
+                            <p>买方名称：</p>
+                            <input type="text" name="buyerUsername"/>
+                        </li>
+                        <!--                        <li>-->
+                        <!--                            <p>是否为拆分订单</p>-->
+                        <!--                            <select name="isSplitUp">-->
+                        <!--                                <option value="">未选择</option>-->
+                        <!--                                <option value="true">true</option>-->
+                        <!--                                <option value="false">false</option>-->
+                        <!--                            </select>-->
+                        <!--                        </li>-->
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btnClass" onclick="pullOrder()" shiro:hasPermission="system:ship:pull">拉取订单
+            </a>
+            <a class="btn btnClass" onclick="$.operate.edit()" shiro:hasPermission="system:ship:edit">修改
+            </a>
+            <a class="btn btnClass" onclick="$.operate.removeAll()" shiro:hasPermission="system:ship:remove">删除
+            </a>
+            <a class="btn btnClass" onclick="$.table.exportExcel()" shiro:hasPermission="system:ship:export">导出
+            </a>
+            <a class="btn btnClass" onclick="pushOrderList(false,10,'创建纯贴面单')" shiro:hasPermission="system:ship:export">创建纯贴面单
+            </a>
+            <a class="btn btnClass" onclick="pushOrderList(true,20,'创建拆包订单')" shiro:hasPermission="system:ship:export">创建拆包订单
+            </a>
+            <!-- <a class="btn btnClass" onclick="pushOrderList(false,30,'创建库存订单')" shiro:hasPermission="system:ship:export">创建库存订单
+             </a>-->
+            <a class="btn btnClass" onclick="applyTrackingNoBatch()" shiro:hasPermission="system:ship:export">批量获取物流信息
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+
+<!--<h3>是否需要拍照确认</h3>-->
+<!--<label><input type="radio" name="photograph" value="10"/>不需要</label>-->
+<!--<label><input type="radio" name="photograph" value="20"/>需要</label>-->
+
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:ship:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:ship:remove')}]];
+    var prefix = ctx + "system/ship";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            pushOrder: prefix + "/pushOrder",
+            addUrl: prefix + "/add",
+            modalName: "待处理订单",
+            uniqueId: "orderId",
+            detailView: true,
+            onExpandRow: function (index, row, $detail) {
+                initChildTable(index, row, $detail);
+            },
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'itemList',
+                    title: '首件商品缩略图',
+                    formatter: function (value, row, index) {
+                        if (value != null) {
+                            return $.table.imageView(JSON.parse(value[0].images)[0]);
+                        }
+                    }
+                },
+                {
+                    field: 'orderId',
+                    title: '订单id',
+                    // visible: false
+                },
+                {
+                    field: 'shopId',
+                    title: '店铺id'
+                },
+                {
+                    field: 'totalAmount',
+                    title: '金额'
+                },
+                {
+                    field: 'country',
+                    title: '国家'
+                },
+                {
+                    field: 'trackingNo',
+                    title: '物流编号'
+                },
+                {
+                    field: 'items',
+                    title: '规格',
+                    formatter: function (value, row, index) {
+                        if (value == null || value === "" || value === 'undefined') {
+                            return "";
+                        }
+                        let obj = JSON.parse(value);
+                        return obj[0].variation_name;
+                    }
+                },
+                {
+                    field: 'items',
+                    title: '数量',
+                    formatter: function (value, row, index) {
+                        if (value == null || value === "" || value === 'undefined') {
+                            return "";
+                        }
+                        let obj = JSON.parse(value);
+                        return obj[0].variation_quantity_purchased;
+                    }
+                },
+                // {
+                //     field: 'userId',
+                //     title: '用户id'
+                // },
+                {
+                    field: 'lastDeliverTime',
+                    title: '最晚发货时间'
+                },
+                {
+                    field: 'orderCreateTime',
+                    title: '订单创建时间'
+                },
+                // {
+                //     field: 'orderUpdateTime',
+                //     title: '订单修改时间'
+                // },
+
+                // {
+                //     field: 'currency',
+                //     title: '货币单位'
+                // },
+                // {
+                //     field: 'cod',
+                //     title: '货到付款'
+                // },
+                // {
+                //     field: 'paymentMethod',
+                //     title: '付款方式'
+                // },
+                // {
+                //     field: 'goodsToDeclare',
+                //     title: '海关申报',
+                //     formatter: function (value, row, index) {
+                //         switch (value) {
+                //             case false:
+                //                 return "P";
+                //             case true:
+                //                 return "T";
+                //             default:
+                //                 return "未知";
+                //         }
+                //     }
+                // },
+                // {
+                //     field: 'messageToSeller',
+                //     title: '给卖方的消息'
+                // },
+                // {
+                //     field: 'items',
+                //     title: '订单商品详情'
+                // },
+                // {
+                //     field: 'payTime',
+                //     title: '支付时间'
+                // },
+                // {
+                //     field: 'buyerUsername',
+                //     title: '买方名称'
+                // },
+                // {
+                //     field: 'isSplitUp',
+                //     title: '是否为拆分订单'
+                // },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="yellowColor inlineMargin' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.orderId + '\')">删除</a>');
+                        actions.push('<a class="yellowColor inlineMargin' + editFlag + '" href="javascript:void(0)" onclick="$.operate.updateItem(\'' + row.orderId + '\')">更新商品</a> ');
+                        if (row.trackingNo == null || row.trackingNo === "") {
+                            actions.push('<a class="yellowColor inlineMargin' + editFlag + '" href="javascript:void(0)" onclick="applyTrackingNo(\'' + row.orderId + '\')">获取物流id</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+    initChildTable = function (index, row, $detail) {
+        var childTable = $detail.html('<table style="table-layout:fixed"></table>').find('table');
+        let itemList = row.itemList;
+        $(childTable).bootstrapTable({
+            data: itemList,
+            columns: [
+                {
+                    field: 'images',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(JSON.parse(value)[0]);
+                    },
+
+                }, {
+                    field: 'name',
+                    title: '商品名称'
+                }, {
+                    field: 'variationName',
+                    title: '规格'
+                }, {
+                    field: 'variationQuantityPurchased',
+                    title: '数量'
+                }, {
+                    field: 'price',
+                    title: '单价'
+                },
+            ]
+        });
+    };
+
+
+    function applyTrackingNo(orderId) {
+        $.ajax({
+            type: 'POST',
+            url: prefix + "/apply/trackingNo",
+            data: {"orderIds": orderId},
+            dataType: "json",
+            beforeSend: function () {
+                $.modal.loading("正在处理中，请稍后...");
+            },
+            success: function (result) {
+                $.operate.ajaxSuccess(result);
+            }
+        });
+    }
+
+    /**
+     * 批量获取物流id
+     */
+    function applyTrackingNoBatch() {
+        var rows = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectSecondColumns() : $.table.selectColumns($.table._option.uniqueId);
+        if (rows.length === 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        $.ajax({
+            type: 'POST',
+            url: prefix + "/apply/trackingNo",
+            data: {"orderIds": rows.join()},
+            dataType: "json",
+            beforeSend: function () {
+                $.modal.loading("正在处理中，请稍后...");
+            },
+            success: function (result) {
+                $.operate.ajaxSuccess(result);
+            }
+        });
+    }
+
+
+    function pullOrder() {
+        $.modal.open("添加条件" + $.table._option.modalName, prefix + "/pull/html");
+
+    }
+
+    function pushOrderList(isRadio, orderType, title) {
+        var rows = $.common.isEmpty($.table._option.uniqueId) ? $.table.selectSecondColumns() : $.table.selectColumns($.table._option.uniqueId);
+        if (rows.length === 0) {
+            $.modal.alertWarning("请至少选择一条记录");
+            return;
+        }
+        // if (isRadio) {
+        //     const url = prefix + "/pull?orderType=" + orderType + "?ids=" + rows.join();
+        //     $.modal.open(title, url);
+        // } else {
+        //     $.modal.confirm("确认要" + title + "，选中的" + rows.length + "条数据吗?", function () {
+        //         var url = $.table._option.pushOrder;
+        //         var data = {
+        //             "ids": rows.join(),
+        //             "orderType": orderType,
+        //             "photograph": 10
+        //         };
+        //         $.operate.submit(url, "post", "json", data);
+        //     });
+        // }
+        var photograph;
+        var weightFlag;
+        if (isRadio) {
+            function commitResult() { // 要出发的函数
+                let photographObj = $('input:radio[name="photograph"]');
+                for (let i = 0; i < photographObj.length; i++) {
+                    var photographElement = photographObj[i];
+                    if (photographElement.checked) {
+                        photograph = photographElement.value;
+                    }
+                    photographElement.remove();
+                }
+                let weightFlagObj = $('input:radio[name="weightFlag"]');
+                for (let i = 0; i < weightFlagObj.length; i++) {
+                    var weightFlagElement = weightFlagObj[i];
+                    if (weightFlagElement.checked) {
+                        weightFlag = weightFlagElement.value;
+                    }
+                    weightFlagElement.remove();
+                }
+                $.modal.confirm("确认要" + title + "，选中的" + rows.length + "条数据吗?", function () {
+                    var url = $.table._option.pushOrder;
+                    var data = {
+                        "ids": rows.join(),
+                        "orderType": orderType,
+                        "photograph": photograph,
+                        "weightFlag": weightFlag
+                    };
+                    $.operate.submit(url, "post", "json", data);
+                });
+                this.parentNode.parentNode.parentNode.style.display = "none"; //这里时为了获得 modal_bc;
+            }
+
+            const html = "<h3>是否需要拍照确认</h3>" +
+                "<label><input type=\"radio\" name=\"photograph\" value=\"10\"/>不需要</label>\n" +
+                "<label><input type=\"radio\" name=\"photograph\" value=\"20\"/>需要</label>\n" +
+                "<h3>是否需要称重</h3>" +
+                "<label><input type=\"radio\" name=\"weightFlag\" value=\"20\"/>不需要</label>\n" +
+                "<label><input type=\"radio\" name=\"weightFlag\" value=\"10\"/>需要</label>";
+            create_modal(false, html, title, commitResult);
+        } else {
+            $.modal.confirm("确认要" + title + "，选中的" + rows.length + "条数据吗?", function () {
+                var url = $.table._option.pushOrder;
+                var data = {
+                    "ids": rows.join(),
+                    "orderType": orderType,
+                    "photograph": 10,
+                    "weightFlag": 20
+                };
+                $.operate.submit(url, "post", "json", data);
+            });
+        }
+    }
+
+
+    function create_modal(alert_or_confirm, modal_contents, titleStr, confirm_trigger_function) {
+        let modal_bg = document.createElement("div");
+        let modal_container = document.createElement("div");
+
+        let modal_title = document.createElement("div");
+        let modal_content = document.createElement("div");
+        let modal_footer = document.createElement("div");
+        //设置id
+        modal_bg.setAttribute("id", "modal_bg");
+        modal_container.setAttribute("id", "modal_container");
+        modal_title.setAttribute("id", "modal_title");
+        modal_content.setAttribute("id", "modal_content");
+        modal_footer.setAttribute("id", "modal_footer");
+        let center = document.createElement("center");
+        modal_title.appendChild(center);
+        modal_title = center;
+        //设置样式
+        modal_bg.style.cssText = "display:block;" +
+            "background-color: rgba(0,0,0,0.4);" +
+            "position:fixed;" +
+            "top:0;" +
+            "bottom:0;" +
+            "right:0;" +
+            "left:0;";
+        modal_container.style.cssText = "background-color:white;" +
+            "width:500px;" +
+            "height:300px;" +
+            "margin:10% auto;";
+        modal_title.style.cssText = "color:white;" +
+            "background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);" +
+            "width:100%;" +
+            "height:50px;" +
+            "line-height:50px;";
+        modal_content.style.cssText = "color:black;" +
+            "text-align:center;" +
+            "width:100%;" +
+            "height:190px;" +
+            "border-bottom:2px solid grey";
+        modal_footer.style.cssText = "padding:14px 15px 15px;" +
+            "color:white;" +
+            "width:100%;" +
+            "height:60px;";
+
+        modal_container.appendChild(modal_title);
+        modal_container.appendChild(modal_content);
+        modal_container.appendChild(modal_footer)
+        modal_bg.appendChild(modal_container);
+        //将整个模态框添加到body中
+        document.body.appendChild(modal_bg);
+
+        //给模态框添加相应的内容
+        modal_title.innerHTML = "<span style='font-size:large;'>" + titleStr + "</span>";
+        modal_content.innerHTML = modal_contents;
+        // modal_footer.innerHTML = "This is a modal footer";
+
+        // 制作关闭按钮
+        let close_button = document.createElement("span");
+        close_button.innerHTML = "&times;";
+        close_button.setAttribute("id", "modal_close_button")
+        close_button.style.cssText = " margin-right:8px;" +
+            "line-height:50px;" +
+            "color: #aaa;" +
+            "float: right;" +
+            "font-size: 28px;" +
+            "font-weight: bold;";
+        close_button.onmouseover = function (event) {
+            close_button.style.color = "black";
+            event = event || window.event;
+            event.stopPropagation();
+        }
+        document.onmouseover = function () {
+            document.getElementById("modal_close_button").style.color = "#aaa";
+        }
+        close_button.addEventListener("click", function () {
+            modal_bg.style.display = "none"
+        })
+        modal_title.appendChild(close_button);
+
+        //制作确定按钮和取消按钮
+        let confirm_button = document.createElement("button");
+        let cancel_button = document.createElement("button");
+        confirm_button.style.cssText = "border-radius:5px;" +
+            "color:white;" +
+            "text-align:center;" +
+            "line-height:20px;" +
+            "font-size:17px;" +
+            "float:right;" +
+            "background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);" +
+            "padding:5px;" +
+            "margin-right:30px;";
+        cancel_button.style.cssText = "border-radius:5px;" +
+            "color:white;" +
+            "text-align:center;" +
+            "line-height:20px;" +
+            "font-size:17px;" +
+            "float:right;" +
+            "background-image: -webkit-linear-gradient(top, #0088cc, #0044cc);" +
+            "padding:5px;" +
+            "margin-right:30px;";
+        confirm_button.innerHTML = "确定";
+        cancel_button.innerHTML = "取消";
+        if (alert_or_confirm) {
+            modal_footer.appendChild(confirm_button);
+        } else {
+            modal_footer.appendChild(confirm_button);
+            modal_footer.appendChild(cancel_button);
+        }
+
+        //添加相应的事件
+        cancel_button.addEventListener("click", function () {
+            modal_bg.style.display = "none"
+        });
+        confirm_button.addEventListener("click", confirm_trigger_function);
+
+    }
+
+</script>
+</body>
+</html>

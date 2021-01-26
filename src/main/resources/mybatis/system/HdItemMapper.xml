@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.item.mapper.HdItemMapper">
+
+    <resultMap type="com.ruoyi.project.system.item.domain.HdItem" id="HdItemResult">
+        <result property="itemId" column="item_id"/>
+        <result property="shopId" column="shop_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="itemSku" column="item_sku"/>
+        <result property="status" column="status"/>
+        <result property="name" column="name"/>
+        <result property="description" column="description"/>
+        <result property="images" column="images"/>
+        <result property="currency" column="currency"/>
+        <result property="price" column="price"/>
+        <result property="itemCreateTime" column="item_create_time"/>
+        <result property="itemUpdateTime" column="item_update_time"/>
+        <result property="categoryId" column="category_id"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectHdItemVo">
+        select item_id, shop_id, user_id, item_sku, status, name, description, images, currency, price, item_create_time, item_update_time, category_id, category_name, create_time, update_time from hd_item
+    </sql>
+
+    <select id="selectHdItemList" parameterType="HdItem" resultMap="HdItemResult">
+        <include refid="selectHdItemVo"/>
+        <where>  
+            <if test="shopId != null "> and shop_id = #{shopId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="itemSku != null  and itemSku != ''"> and item_sku = #{itemSku}</if>
+            <if test="status != null  and status != ''"> and status = #{status}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="description != null  and description != ''"> and description = #{description}</if>
+            <if test="images != null  and images != ''"> and images = #{images}</if>
+            <if test="currency != null  and currency != ''"> and currency = #{currency}</if>
+            <if test="price != null "> and price = #{price}</if>
+            <if test="itemCreateTime != null "> and item_create_time = #{itemCreateTime}</if>
+            <if test="itemUpdateTime != null "> and item_update_time = #{itemUpdateTime}</if>
+            <if test="categoryId != null "> and category_id = #{categoryId}</if>
+            <if test="categoryName != null  and categoryName != ''"> and category_name like concat('%', #{categoryName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectHdItemById" parameterType="Long" resultMap="HdItemResult">
+        <include refid="selectHdItemVo"/>
+        where item_id = #{itemId}
+    </select>
+        
+    <insert id="insertHdItem" parameterType="HdItem">
+        insert into hd_item
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="itemId != null ">item_id,</if>
+            <if test="shopId != null ">shop_id,</if>
+            <if test="userId != null ">user_id,</if>
+            <if test="itemSku != null  and itemSku != ''">item_sku,</if>
+            <if test="status != null  and status != ''">status,</if>
+            <if test="name != null  and name != ''">name,</if>
+            <if test="description != null  and description != ''">description,</if>
+            <if test="images != null  and images != ''">images,</if>
+            <if test="currency != null  and currency != ''">currency,</if>
+            <if test="price != null ">price,</if>
+            <if test="itemCreateTime != null ">item_create_time,</if>
+            <if test="itemUpdateTime != null ">item_update_time,</if>
+            <if test="categoryId != null ">category_id,</if>
+            <if test="categoryName != null  and categoryName != ''">category_name,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="itemId != null ">#{itemId},</if>
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="userId != null ">#{userId},</if>
+            <if test="itemSku != null  and itemSku != ''">#{itemSku},</if>
+            <if test="status != null  and status != ''">#{status},</if>
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="description != null  and description != ''">#{description},</if>
+            <if test="images != null  and images != ''">#{images},</if>
+            <if test="currency != null  and currency != ''">#{currency},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="itemCreateTime != null ">#{itemCreateTime},</if>
+            <if test="itemUpdateTime != null ">#{itemUpdateTime},</if>
+            <if test="categoryId != null ">#{categoryId},</if>
+            <if test="categoryName != null  and categoryName != ''">#{categoryName},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHdItem" parameterType="HdItem">
+        update hd_item
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopId != null ">shop_id = #{shopId},</if>
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="itemSku != null  and itemSku != ''">item_sku = #{itemSku},</if>
+            <if test="status != null  and status != ''">status = #{status},</if>
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="description != null  and description != ''">description = #{description},</if>
+            <if test="images != null  and images != ''">images = #{images},</if>
+            <if test="currency != null  and currency != ''">currency = #{currency},</if>
+            <if test="price != null ">price = #{price},</if>
+            <if test="itemCreateTime != null ">item_create_time = #{itemCreateTime},</if>
+            <if test="itemUpdateTime != null ">item_update_time = #{itemUpdateTime},</if>
+            <if test="categoryId != null ">category_id = #{categoryId},</if>
+            <if test="categoryName != null  and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where item_id = #{itemId}
+    </update>
+
+    <delete id="deleteHdItemById" parameterType="Long">
+        delete from hd_item where item_id = #{itemId}
+    </delete>
+
+    <delete id="deleteHdItemByIds" parameterType="String">
+        delete from hd_item where item_id in 
+        <foreach item="itemId" collection="array" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </delete>
+
+    <select id="selectByItemIds" parameterType="Long" resultMap="HdItemResult">
+        <include refid="selectHdItemVo"/>
+        where item_id in
+        <foreach collection="list" item="itemId" open="(" separator="," close=")">
+            #{itemId}
+        </foreach>
+    </select>
+</mapper>

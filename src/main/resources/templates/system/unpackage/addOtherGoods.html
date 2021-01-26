@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增库存管理')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-StockInfo-add">
+        <input type="hidden" name="shopeeOrderNo" th:value="${shopeeOrderNo}" id="shopeeOrderNo">
+        <input type="hidden" name="photograph" th:value="${photograph}" id="photograph">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品类别：</label>
+            <div class="col-sm-8">
+                <input name="categoryName" id="categoryName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品名称：</label>
+            <div class="col-sm-8">
+                <input name="goodsName" id="goodsName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品规格：</label>
+            <div class="col-sm-8">
+                <input name="variationName" id="variationName" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品数量：</label>
+            <div class="col-sm-8">
+                <input name="goodsCount" id="goodsCount" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">快递单号：</label>
+            <div class="col-sm-8">
+                <input name="packageNo" id="packageNo" class="form-control" type="text" required>
+            </div>
+        </div>
+        <div class="form-group">
+            <label class="col-sm-3 control-label">商品缩略图：</label>
+            <div class="col-sm-8">
+                <input name="goodsImage" id="goodsImage" class="form-control goodsImage" type="file"
+                       accept="image/png, image/jpeg, image/gif, image/jpg" onchange="showImage(this)"/>
+            </div>
+            <img src="" class="showImage" style="display: none">
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+    var prefix = ctx + "system/userpackage";
+    $("#form-StockInfo-add").validate({
+        focusCleanup: true,
+        rules: {
+            categoryName: {
+                minlength: 1,
+                maxlength: 255,
+            },
+            goodsName: {
+                minlength: 1,
+                maxlength: 255,
+            },
+            goodsCount: {
+                minlength: 1,
+                maxlength: 11,
+                digits: true,
+            },
+            packageNo: {
+                minlength: 1,
+                maxlength: 32,
+            },
+        },
+        messages: {
+            categoryName: {
+                minlength: "必须在1-255个字符之间",
+                maxlength: "必须在1-255个字符之间",
+            },
+            goodsName: {
+                minlength: "必须在1-255个字符之间",
+                maxlength: "必须在1-255个字符之间",
+            },
+            goodsCount: {
+                minlength: "最少为1",
+                maxlength: "超过最大值",
+                digits: "只能输入数字",
+            },
+            packageNo: {
+                minlength: "必须在1-32个字符之间",
+                maxlength: "必须在1-32个字符之间",
+            },
+        }
+    });
+
+    function showImage(ele) {
+        p = $(ele).next();
+        if (undefined == $(ele)[0].files[0]) {
+            $(p).css("display", "none")
+        } else {
+            $(p).attr('src', URL.createObjectURL($(ele)[0].files[0]));
+            $(p).css("display", "block")
+        }
+    };
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            var formData = new FormData();
+            formData.append('shopeeOrderNo', $('#shopeeOrderNo').val());
+            formData.append('photograph', $('#photograph').val());
+            formData.append('categoryName', $('#categoryName').val());
+            formData.append('goodsName', $('#goodsName').val());
+            formData.append('goodsCount', $('#goodsCount').val());
+            formData.append('packageNo', $('#packageNo').val());
+            formData.append('variationName', $('#variationName').val());
+            formData.append('goodsImageDate', $('#goodsImage')[0].files[0]);
+            $.ajax({
+                url: prefix + "/add",
+                type: 'post',
+                cache: false,
+                data: formData,
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: function (result) {
+                    $.operate.successCallback(result);
+                }
+            });
+        }
+    }
+</script>
+</body>
+</html>

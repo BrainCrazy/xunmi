@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.miandan.mapper.MiandanOrderMapper">
+
+    <resultMap type="MiandanOrder" id="MiandanOrderResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="shopeeOrderNo" column="shopee_order_no"/>
+        <result property="authNumber" column="auth_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="status" column="status"/>
+        <result property="goodImage" column="good_image"/>
+        <result property="packageNo" column="package_no"/>
+        <result property="items" column="items"/>
+        <result property="amount" column="amount"/>
+        <result property="country" column="country"/>
+        <result property="lastedSendTime" column="lasted_send_time"/>
+        <result property="shippingCarrier" column="shipping_carrier"/>
+        <result property="remark" column="remark"/>
+        <result property="feeFlag" column="feeFlag"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+
+    <sql id="selectMiandanOrderVo">
+        select miandan.* from miandan_order miandan
+    </sql>
+
+    <select id="selectMiandanOrderList" parameterType="MiandanOrder" resultMap="MiandanOrderResult">
+        <include refid="selectMiandanOrderVo"/>
+        left join sys_user u on miandan.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            <if test="userId != null ">and miandan.user_id = #{userId}</if>
+            <if test="exceptionFlag != null and exceptionFlag!='' ">and miandan.exceptionFlag = #{exceptionFlag}</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">and miandan.shopee_order_no = #{shopeeOrderNo}</if>
+            <if test="authNumber != null  and authNumber != ''">and miandan.auth_number = #{authNumber}</if>
+            <if test="createTime != null ">and miandan.create_time = #{createTime，jdbcType=TIMESTAMP}</if>
+            <if test="status != null ">and miandan.status = #{status}</if>
+            <if test="packageNo != null  and packageNo != ''">and miandan.package_no like concat('%', #{packageNo}, '%')</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime !=''">and DATE (miandan.create_time) &gt;= #{params.beginCreateTime}</if>
+            <if test="params.endCreateTime != null and params.endCreateTime !=''">and DATE (miandan.create_time) &lt;= #{params.endCreateTime}</if>
+            <if test="params.dataScope != null and params.dataScope !=''">${params.dataScope}</if>
+        </where>
+        order by miandan.id DESC
+    </select>
+    <select id="selectMiandanOrderByPackageNo" resultMap="MiandanOrderResult">
+        <include refid="selectMiandanOrderVo"/>
+        <where>
+            <if test="status != null ">and miandan.status = #{status}</if>
+            <if test="packageNo != null  and packageNo != ''">and miandan.package_no =#{packageNo}</if>
+        </where>
+        order by miandan.id DESC
+    </select>
+    <select id="selectMiandanOrderById" parameterType="Long" resultMap="MiandanOrderResult">
+        <include refid="selectMiandanOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertMiandanOrder" parameterType="MiandanOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into miandan_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no,</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number,</if>
+            create_time,
+            <if test="status != null ">status,</if>
+            <if test="goodImage != null  and goodImage != ''">good_image,</if>
+            <if test="packageNo != null  and packageNo != ''">package_no,</if>
+            <if test="items != null  and items != ''">items,</if>
+            <if test="amount != null  and amount != ''">amount,</if>
+            <if test="country != null  and country != ''">country,</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">shipping_carrier,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="lastedSendTime != null ">lasted_send_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">#{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">#{authNumber},</if>
+            #{createTime,jdbcType=TIMESTAMP},
+            <if test="status != null ">#{status},</if>
+            <if test="goodImage != null  and goodImage != ''">#{goodImage},</if>
+            <if test="packageNo != null  and packageNo != ''">#{packageNo},</if>
+            <if test="items != null  and items != ''">#{items},</if>
+            <if test="amount != null  and amount != ''">#{amount},</if>
+            <if test="country != null  and country != ''">#{country},</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">#{shippingCarrier},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="lastedSendTime != null ">#{lastedSendTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateMiandanOrder" parameterType="MiandanOrder">
+        update miandan_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no = #{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number = #{authNumber},</if>
+            <if test="createTime != null ">create_time = #{createTime，jdbcType=TIMESTAMP},</if>
+            <if test="status != null ">status = #{status},</if>
+            <if test="goodImage != null  and goodImage != ''">good_image = #{goodImage},</if>
+            <if test="packageNo != null  and packageNo != ''">package_no = #{packageNo},</if>
+            <if test="amount != null  and amount != ''">amount = #{amount},</if>
+            <if test="country != null and country != ''">country = #{country},</if>
+            <if test="lastedSendTime != null ">lasted_send_time = #{lastedSendTime},</if>
+            <if test="shippingCarrier != null and shippingCarrier != ''">shipping_carrier = #{shippingCarrier},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteMiandanOrderById" parameterType="Long">
+        delete from miandan_order where id = #{id}
+    </delete>
+
+    <delete id="deleteMiandanOrderByIds" parameterType="String">
+        delete from miandan_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateStatusById">
+        update miandan_order set status=#{targetStatus},exceptionFlag=10
+        where id = #{id} and status=#{sourceStatus}
+    </update>
+    <select id="queryCount" parameterType="Long" resultType="Integer">
+        select count(1) from miandan_order
+        where user_id = #{userId}
+    </select>
+    <select id="selectByShopeeOrderNos" parameterType="String" resultMap="MiandanOrderResult">
+        <include refid="selectMiandanOrderVo"/>
+        where shopee_order_no in
+        <foreach collection="array" item="shopeeOrderNo" open="(" separator="," close=")">
+            #{shopeeOrderNo}
+        </foreach>
+    </select>
+    <update id="updateExeFlag">
+        update miandan_order set exceptionFlag=20
+        where updateTime &lt; #{updateTime} and status in(20,30)
+    </update>
+</mapper>

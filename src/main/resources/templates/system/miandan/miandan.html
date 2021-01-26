@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('纯贴面单列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="miandanFormId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>用户ID：</p>
+                            <input type="text" name="userId"/>
+                        </li>
+                        <li>
+                            <p>虾皮订单号：</p>
+                            <input type="text" name="shopeeOrderNo"/>
+                        </li>
+                        <li>
+                            <p>授权账号：</p>
+                            <input type="text" name="authNumber"/>
+                        </li>
+                        <li class="select-time">
+                            <p>创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
+                                   name="params[beginCreateTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
+                                   name="params[endCreateTime]"/>
+                        </li>
+
+                        <li>
+                            <p>运单号：</p>
+                            <input type="text" name="packageNo"/>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" id="miandan_seach"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btnClass" onclick="shaixuan(10)">未填写运单号
+            </a>
+            <a class="btn btnClass" onclick="shaixuan(20)">货物待入库
+            </a>
+            <a class="btn btnClass" onclick="shaixuan(30)">已入库代发货
+            </a>
+            <a class="btn btnClass" onclick="shaixuan(40)">已发货
+            </a>
+            <a class="btn btnClass" onclick="shaixuan(70)">异常订单
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:miandan:edit')}]];
+    var confirmStockFlag = [[${@permission.hasPermi('system:miandan:confirmStock')}]];
+    var OutStockFlag = [[${@permission.hasPermi('system:miandan:confirmStock')}]];
+    var removeFlag = [[${@permission.hasPermi('system:miandan:remove')}]];
+    var statusDatas = [[${@dict.getType('status')}]];
+    var prefix = ctx + "system/miandan";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefix + "/edit/{id}",
+            exportUrl: prefix + "/export",
+            modalName: "纯贴面单",
+            addPackageNoUrl: prefix + "/addPackageNo/{id}",
+            confirmStockUrl: prefix + "/confirmStock/{id}",
+            OutStockUrl: prefix + "/outStock/{id}",
+            removeUrl: prefix + "/remove",
+            showSearch: false,
+            showRefresh: false,
+            showToggle: false,
+            showColumns: false,
+            detailView: true,
+            onExpandRow: function (index, row, $detail) {
+                initChildTable(index, row, $detail);
+            },
+            columns: [
+                {
+                    field: 'goodImage',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    },
+
+                },
+                {
+                    field: 'createTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'shopeeOrderNo',
+                    title: '虾皮订单号'
+                },
+                {
+                    field: "authNumber",
+                    title: '授权店铺'
+                },
+                {
+                    field: 'amount',
+                    title: '金额',
+                },
+                {
+                    field: 'country',
+                    title: '国家',
+                },
+                {
+                    field: 'lastedSendTime',
+                    title: '最晚发货时间',
+                },
+                {
+                    field: 'shippingCarrier',
+                    title: '配送方式',
+                },
+                {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(statusDatas, value);
+                    }
+                },
+                {
+                    field: 'packageNo',
+                    title: '运单号'
+                },
+                {
+                    field: 'remark',
+                    title: '备注',
+                },
+
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        if (10 == row.status) {
+                            actions.push('<a class="yellowColor inlineMargin ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')">添加运单号</a> ');
+                            actions.push('<a class="yellowColor inlineMargin ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')">删除</a> ');
+                        }
+                        if (20 == row.status) {
+                            actions.push('<a class="yellowColor inlineMargin ' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')">修改运单号</a> ');
+                            actions.push('<a class="yellowColor inlineMargin ' + confirmStockFlag + '" href="javascript:void(0)" onclick="$.operate. confirmStock(\'' + row.id + '\')">确认入库</a> ');
+                            actions.push('<a class="yellowColor inlineMargin ' + confirmStockFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')">删除</a> ');
+                        }
+                        if (30 == row.status) {
+                            actions.push('<a class="yellowColor inlineMargin ' + OutStockFlag + '" href="javascript:void(0)" onclick="$.operate.confirmOutStock(\'' + row.id + '\')">确认发货</a> ');
+                            actions.push('<a class="yellowColor inlineMargin ' + confirmStockFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')">删除</a> ');
+                        }
+                        actions.push('<a class="yellowColor inlineMargin ' + OutStockFlag + '" href="' + prefix + '/download?id=' + row.id + '">下载面单</a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+    initChildTable = function (index, row, $detail) {
+        var childTable = $detail.html('<table style="table-layout:fixed"></table>').find('table');
+        $(childTable).bootstrapTable({
+            url: prefix + "/orderDetail",
+            method: 'post',
+            sidePagination: "server",
+            contentType: "application/x-www-form-urlencoded",
+            queryParams: {
+                id: row.id
+            },
+            columns: [
+                {
+                    field: 'images',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    },
+
+                }, {
+                    field: 'name',
+                    title: '商品名称'
+                }, {
+                    field: 'itemSku',
+                    title: '商品sku'
+                }, {
+                    field: 'price',
+                    title: '价格'
+                },
+            ]
+        });
+    };
+
+    function shaixuan(status) {
+        if (70 == status) {
+            $('#status').remove();
+            $('#miandanFormId').append("<input type='hidden' id='exceptionFlag' name='exceptionFlag' value='20'/>");
+        } else {
+            $('#status').remove();
+            $('#exceptionFlag').remove();
+            $('#miandanFormId').append("<input type='hidden' id='status' name='status' value='" + status + "'/>");
+        }
+        $.table.search();
+    }
+
+    $('#miandan_seach').click(function () {
+        $('#status').remove();
+        $('#exceptionFlag').remove();
+        $.table.search();
+    });
+</script>
+</body>
+</html>

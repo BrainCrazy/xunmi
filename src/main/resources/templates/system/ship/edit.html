@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('修改待处理订单')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-ship-edit" th:object="${hdOrderShip}">
+            <input name="orderId" th:field="*{orderId}" type="hidden">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">店铺id：</label>
+                <div class="col-sm-8">
+                    <input name="shopId" th:field="*{shopId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户id：</label>
+                <div class="col-sm-8">
+                    <input name="userId" th:field="*{userId}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">订单创建时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="orderCreateTime" th:value="${#dates.format(hdOrderShip.orderCreateTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">订单修改时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="orderUpdateTime" th:value="${#dates.format(hdOrderShip.orderUpdateTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">下单国家数字代码：</label>
+                <div class="col-sm-8">
+                    <input name="country" th:field="*{country}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">货币单位，3位数代码：</label>
+                <div class="col-sm-8">
+                    <input name="currency" th:field="*{currency}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">是否为货到付款订单，0-false,1-true：</label>
+                <div class="col-sm-8">
+                    <input name="cod" th:field="*{cod}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">买方选择为订单付款的付款方式：</label>
+                <div class="col-sm-8">
+                    <input name="paymentMethod" th:field="*{paymentMethod}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">是否需要在海关申报，0-false,1-true：</label>
+                <div class="col-sm-8">
+                    <input name="goodsToDeclare" th:field="*{goodsToDeclare}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">给卖方的消息：</label>
+                <div class="col-sm-8">
+                    <input name="messageToSeller" th:field="*{messageToSeller}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-3 control-label">订单商品详情，jsonArray：</label>
+                <div class="col-sm-8">
+                    <textarea name="items" class="form-control">[[*{items}]]</textarea>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">支付时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="payTime" th:value="${#dates.format(hdOrderShip.payTime, 'yyyy-MM-dd')}" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">买方名称：</label>
+                <div class="col-sm-8">
+                    <input name="buyerUsername" th:field="*{buyerUsername}" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">是否为拆分订单,0-false,1-true：</label>
+                <div class="col-sm-8">
+                    <input name="isSplitUp" th:field="*{isSplitUp}" class="form-control" type="text">
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/ship";
+        $("#form-ship-edit").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/edit", $('#form-ship-edit').serialize());
+            }
+        }
+
+        $("input[name='orderCreateTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='orderUpdateTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+
+        $("input[name='payTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订单详情')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <br>
+    <h3 style="text-align: center">以下为该快递的详细信息</h3>
+    <br>
+    <form id="formId">
+        <input type="hidden" name="id" id="id" th:value="${id}">
+        <input type="hidden" name="orderType" id="orderType" th:value="${orderType}">
+        <div class="form-group" th:if="${photograph} == 20">
+            <label class="col-sm-2 control-label" style="line-height: 34px;text-align: center">上传快递验货图片：</label>
+            <div class="col-sm-3">
+                <input name="stockImage" id="stockImage" class="form-control stockImage" type="file"
+                       accept="image/png, image/jpeg, image/gif, image/jpg" onchange="showImage(this)"/>
+                <img src="" class="showImage" style="display: none">
+            </div>
+        </div>
+    </form>
+
+
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/userpackage";
+    $(function () {
+        var options = {
+            url: prefix + "/packageList",
+            search: false,
+            showToggle: false,
+            showRefresh: false,
+            showSearch: false,
+            columns: [
+                {
+                    field: 'packageNo',
+                    title: '快递单号'
+                }, {
+                    field: 'shopeeOrderNo',
+                    title: '虾皮订单号'
+                }, {
+                    field: 'goodsImage',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                }, {
+                    field: 'goodsName',
+                    title: '商品名称'
+                }, {
+                    field: 'variationName',
+                    title: '规格'
+                }, {
+                    field: 'goodsCount',
+                    title: '商品数量'
+                }, {
+                    field: 'status',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        if (10 == value) {
+                            return "待入库";
+                        } else if (20 == value) {
+                            return "已入库";
+                        } else {
+                            return "";
+                        }
+                    }
+                }, {
+                    field: 'stockImage',
+                    title: '仓库图片',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                }, {
+                    field: 'photograph',
+                    title: '是否拍照确认',
+                    formatter: function (value, row, index) {
+                        if (20 == value) {
+                            return "需要";
+                        } else {
+                            return "不需要";
+                        }
+                    }
+                }, {
+                    field: 'orderType',
+                    title: '订单类型',
+                    formatter: function (value, row, index) {
+                        if (10 == value) {
+                            return "拆包订单";
+                        } else if (20 == value) {
+                            return "纯贴面单";
+                        } else {
+                            return "库存补货";
+                        }
+                    }
+                },]
+        };
+        $.table.init(options);
+    });
+
+    function showImage(ele) {
+        p = $(ele).next();
+        if (undefined == $(ele)[0].files[0]) {
+            $(p).css("display", "none")
+        } else {
+            $(p).attr('src', URL.createObjectURL($(ele)[0].files[0]));
+            $(p).css("display", "block");
+        }
+    };
+
+    function submitHandler() {
+        var flag = true;
+        var formData = new FormData();
+        formData.append('id', $('#id').val());
+        formData.append('orderType', $('#orderType').val());
+        $('.stockImage').each(function () {
+            if (undefined == $(this)[0].files[0]) {
+                flag = false;
+                return false;
+            }
+            formData.append('stockImage', $(this)[0].files[0]);
+        })
+        if (!flag) {
+            $.modal.alertError("图片必须上传，请选择图片！");
+            return;
+        }
+        $.ajax({
+            url: prefix + "/saveStockImage",
+            type: 'post',
+            cache: false,
+            data: formData,
+            processData: false,
+            contentType: false,
+            dataType: "json",
+            success: function (result) {
+                $.operate.successCallback(result);
+            }
+        });
+    }
+</script>
+</body>
+</html>

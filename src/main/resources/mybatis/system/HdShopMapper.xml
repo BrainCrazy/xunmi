@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.shop.mapper.HdShopMapper">
+    
+    <resultMap type="HdShop" id="HdShopResult">
+        <result property="shopId"    column="shop_id"    />
+        <result property="shopName"    column="shop_name"    />
+        <result property="countryCode"    column="country_code"    />
+        <result property="userId"    column="user_id"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+    </resultMap>
+
+    <sql id="selectHdShopVo">
+        select shop_id, shop_name, country_code, user_id, create_time, update_time from hd_shop
+    </sql>
+
+    <select id="selectHdShopList" parameterType="HdShop" resultMap="HdShopResult">
+        <include refid="selectHdShopVo"/>
+        <where>
+            <if test="shopName != null  and shopName != ''"> and shop_name like concat('%', #{shopName}, '%')</if>
+            <if test="countryCode != null  and countryCode != ''"> and country_code = #{countryCode}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectHdShopById" parameterType="Long" resultMap="HdShopResult">
+        <include refid="selectHdShopVo"/>
+        where shop_id = #{shopId}
+    </select>
+
+    <select id="findByUserId" parameterType="Long" resultMap="HdShopResult">
+        <include refid="selectHdShopVo"/>
+        where user_id = #{userId}
+    </select>
+    <select id="findAll" resultMap="HdShopResult">
+        <include refid="selectHdShopVo"/>
+    </select>
+
+
+    <insert id="insertHdShop" parameterType="HdShop">
+        insert into hd_shop
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">shop_id,</if>
+            <if test="shopName != null  and shopName != ''">shop_name,</if>
+            <if test="countryCode != null  and countryCode != ''">country_code,</if>
+            <if test="userId != null ">user_id,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="updateTime != null ">update_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="shopId != null ">#{shopId},</if>
+            <if test="shopName != null  and shopName != ''">#{shopName},</if>
+            <if test="countryCode != null  and countryCode != ''">#{countryCode},</if>
+            <if test="userId != null ">#{userId},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="updateTime != null ">#{updateTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHdShop" parameterType="HdShop">
+        update hd_shop
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="shopName != null  and shopName != ''">shop_name = #{shopName},</if>
+            <if test="countryCode != null  and countryCode != ''">country_code = #{countryCode},</if>
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="updateTime != null ">update_time = #{updateTime},</if>
+        </trim>
+        where shop_id = #{shopId}
+    </update>
+
+    <delete id="deleteHdShopById" parameterType="Long">
+        delete from hd_shop where shop_id = #{shopId}
+    </delete>
+
+    <delete id="deleteHdShopByIds" parameterType="String">
+        delete from hd_shop where shop_id in 
+        <foreach item="shopId" collection="array" open="(" separator="," close=")">
+            #{shopId}
+        </foreach>
+    </delete>
+    
+</mapper>

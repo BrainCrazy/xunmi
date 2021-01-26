@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('物流公司列表')" />
+</head>
+<body class="gray-bg">
+     <div class="container-div">
+        <div class="row">
+            <div class="col-sm-12 search-collapse">
+                <form id="formId">
+                    <div class="select-list">
+                        <ul>
+                            <li>
+                                <p>物流公司名称：</p>
+                                <input type="text" name="logisticsName"/>
+                            </li>
+                            <li>
+                                <p>物流公司编号：</p>
+                                <input type="text" name="logisticsNum"/>
+                            </li>
+                            <li>
+                                <p>创建人：</p>
+                                <input type="text" name="createUser"/>
+                            </li>
+                            <li>
+                                <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                                <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                            </li>
+                        </ul>
+                    </div>
+                </form>
+            </div>
+
+            <div class="btn-group-sm" id="toolbar" role="group">
+                <a class="btn btn-success" onclick="$.operate.add()" shiro:hasPermission="system:logistics:add">
+                   添加
+                </a>
+                <a class="btn btn-primary single disabled" onclick="$.operate.edit()" shiro:hasPermission="system:logistics:edit">
+                    修改
+                </a>
+                <a class="btn btn-danger multiple disabled" onclick="$.operate.removeAll()" shiro:hasPermission="system:logistics:remove">
+                   删除
+                </a>
+                <a class="btn btn-warning" onclick="$.table.exportExcel()" shiro:hasPermission="system:logistics:export">
+                    导出
+                 </a>
+            </div>
+            <div class="col-sm-12 select-table table-striped">
+                <table id="bootstrap-table" data-mobile-responsive="true"></table>
+            </div>
+        </div>
+    </div>
+    <th:block th:include="include :: footer" />
+    <script th:inline="javascript">
+        var editFlag = [[${@permission.hasPermi('system:logistics:edit')}]];
+        var removeFlag = [[${@permission.hasPermi('system:logistics:remove')}]];
+        var prefix = ctx + "system/logistics";
+
+        $(function() {
+            var options = {
+                url: prefix + "/list",
+                createUrl: prefix + "/add",
+                updateUrl: prefix + "/edit/{id}",
+                removeUrl: prefix + "/remove",
+                exportUrl: prefix + "/export",
+                modalName: "物流公司",
+                columns: [{
+                    checkbox: true
+                },
+                {
+                    field : 'id', 
+                    title : '物流公司编号',
+                    visible: false
+                },
+                {
+                    field : 'logisticsName', 
+                    title : '物流公司名称'
+                },
+                {
+                    field : 'logisticsNum', 
+                    title : '物流公司编号'
+                },
+                {
+                    field : 'createUser', 
+                    title : '物流公司编号'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function(value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="yellowColor inlineMargin' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-trash"></i>删除</a>');
+                        actions.push('<a class="yellowColor inlineMargin' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')">编辑</a> ');
+                        return actions.join('');
+                    }
+                }]
+            };
+            $.table.init(options);
+        });
+    </script>
+</body>
+</html>

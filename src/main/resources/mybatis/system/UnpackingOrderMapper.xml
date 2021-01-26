@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.unpackage.mapper.UnpackingOrderMapper">
+
+    <resultMap type="UnpackingOrder" id="UnpackingOrderResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="shopeeOrderNo" column="shopee_order_no"/>
+        <result property="authNumber" column="auth_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="packageStatus" column="package_status"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="photograph" column="photograph"/>
+        <result property="amount" column="amount"/>
+        <result property="country" column="country"/>
+        <result property="lastedSendTime" column="lasted_send_time"/>
+        <result property="shippingCarrier" column="shipping_carrier"/>
+        <result property="remark" column="remark"/>
+        <result property="outstockImage" column="outstock_image"/>
+        <result property="outstockTime" column="outstock_time"/>
+        <result property="feeFlag" column="feeFlag"/>
+        <result property="weightFlag" column="weightFlag"/>
+        <result property="weight" column="weight"/>
+        <result property="updateTime" column="updateTime"/>
+    </resultMap>
+    <sql id="selectUnpackingOrderVo">
+       select unpacking.* from unpacking_order unpacking
+    </sql>
+
+    <select id="selectUnpackingOrderList" parameterType="UnpackingOrder" resultMap="UnpackingOrderResult">
+        <include refid="selectUnpackingOrderVo"/>
+        left join sys_user u on unpacking.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            <if test="userId != null  and userId != ''">and unpacking.user_id = #{userId}</if>
+            <if test="exceptionFlag != null and exceptionFlag!=''">and unpacking.exceptionFlag = #{exceptionFlag}</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">and unpacking.shopee_order_no = #{shopeeOrderNo}</if>
+            <if test="authNumber != null  and authNumber != ''">and unpacking.auth_number = #{authNumber}</if>
+            <if test="createTime != null ">and unpacking.create_time = #{createTime}</if>
+            <if test="packageStatus != null ">and unpacking.package_status = #{packageStatus}</if>
+            <if test="photograph != null ">and unpacking.photograph = #{photograph}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime !=''">and DATE (unpacking.create_time) &gt;= #{params.beginCreateTime}</if>
+            <if test="params.endCreateTime != null and params.endCreateTime !=''">and DATE (unpacking.create_time) &lt;= #{params.endCreateTime}</if>
+            <if test="params.dataScope != null and params.dataScope !=''">${params.dataScope}</if>
+        </where>
+        order by unpacking.id DESC
+    </select>
+
+    <select id="selectUnpackingOrderById" parameterType="Long" resultMap="UnpackingOrderResult">
+        <include refid="selectUnpackingOrderVo"/>
+        where id = #{id}
+    </select>
+    <select id="selectByShopeeOrderNo" parameterType="String" resultMap="UnpackingOrderResult">
+        <include refid="selectUnpackingOrderVo"/>
+        where shopee_order_no = #{shopeeOrderNo}
+    </select>
+    <insert id="insertUnpackingOrder" parameterType="UnpackingOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into unpacking_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no,</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="packageStatus != null ">package_status,</if>
+            <if test="goodsImage != null  and goodsImage != ''">goods_image,</if>
+            <if test="photograph != null ">photograph,</if>
+            <if test="amount != null  and amount != ''">amount,</if>
+            <if test="country != null  and country != ''">country,</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">shipping_carrier,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="lastedSendTime != null ">lasted_send_time,</if>
+            <if test="weightFlag != null  and weightFlag != ''">weightFlag,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">#{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">#{authNumber},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="packageStatus != null ">#{packageStatus},</if>
+            <if test="goodsImage != null  and goodsImage != ''">#{goodsImage},</if>
+            <if test="photograph != null ">#{photograph},</if>
+            <if test="amount != null  and amount != ''">#{amount},</if>
+            <if test="country != null  and country != ''">#{country},</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">#{shippingCarrier},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="lastedSendTime != null ">#{lastedSendTime},</if>
+            <if test="weightFlag != null">#{weightFlag},</if>
+        </trim>
+    </insert>
+
+    <update id="updateUnpackingOrder" parameterType="UnpackingOrder">
+        update unpacking_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no = #{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number = #{authNumber},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="packageStatus != null ">package_status = #{packageStatus},</if>
+            <if test="goodsImage != null  and goodsImage != ''">goods_image = #{goodsImage},</if>
+            <if test="photograph != null ">photograph = #{photograph},</if>
+            <if test="amount != null  and amount != ''">amount = #{amount},</if>
+            <if test="country != null and country != ''">country = #{country},</if>
+            <if test="lastedSendTime != null ">lasted_send_time = #{lastedSendTime},</if>
+            <if test="shippingCarrier != null and shippingCarrier != ''">shipping_carrier = #{shippingCarrier},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+            <if test="outstockImage != null and outstockImage != ''">outstock_image = #{outstockImage},</if>
+            <if test="outstockTime != null">outstock_time = #{outstockTime},</if>
+            <if test="weightFlag != null">weightFlag = #{weightFlag},</if>
+        </trim>
+        where id = #{id}
+    </update>
+    <update id="updateUnpackingOrderByShopeeOrderNo" parameterType="UnpackingOrder">
+        update unpacking_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="packageStatus != null ">package_status = #{packageStatus},</if>
+            <if test="outstockImage != null and outstockImage != ''">outstock_image = #{outstockImage},</if>
+            <if test="outstockTime != null">outstock_time = #{outstockTime},</if>
+            <if test="weight != null">weight = #{weight},</if>
+            <if test="exceptionFlag != null">exceptionFlag = #{exceptionFlag},</if>
+        </trim>
+        where shopee_order_no = #{shopeeOrderNo}
+    </update>
+    <delete id="deleteUnpackingOrderById" parameterType="Long">
+        delete from unpacking_order where id = #{id}
+    </delete>
+
+    <delete id="deleteUnpackingOrderByIds" parameterType="String">
+        delete from unpacking_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateStatusByShopeeOrderNo">
+        update unpacking_order set package_status = #{packageStatus},exceptionFlag=10
+        where shopee_order_no = #{shopeeOrderNo}
+    </update>
+    <update id="updateStatusAndRemarkByShopeeOrderNo">
+        update unpacking_order set package_status = #{packageStatus},remark=#{remark}
+        where shopee_order_no = #{shopeeOrderNo}
+    </update>
+    <update id="updateStatusById">
+        update unpacking_order set package_status=#{targetStatus}
+        where id = #{id}
+    </update>
+
+    <select id="queryCount" parameterType="Long" resultType="Integer">
+        select count(1) from unpacking_order unpacking
+        where user_id = #{userId}
+    </select>
+    <select id="selectByShopeeOrderNos" parameterType="String" resultMap="UnpackingOrderResult">
+        <include refid="selectUnpackingOrderVo"/>
+        where shopee_order_no in
+        <foreach collection="array" item="shopeeOrderNo" open="(" separator="," close=")">
+            #{shopeeOrderNo}
+        </foreach>
+    </select>
+    <update id="updateExeFlag">
+        update unpacking_order set exceptionFlag=20
+        where updateTime &lt; #{updateTime} and package_status in(20,30,40)
+    </update>
+</mapper>

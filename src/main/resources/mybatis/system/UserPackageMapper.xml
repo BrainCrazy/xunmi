@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.userpackage.mapper.UserPackageMapper">
+
+    <resultMap type="UserPackage" id="UserPackageResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="packageNo" column="package_no"/>
+        <result property="shopeeOrderNo" column="shopee_order_no"/>
+        <result property="categoryName" column="category_name"/>
+        <result property="goodsCount" column="goods_count"/>
+        <result property="goodsName" column="goods_name"/>
+        <result property="goodsImage" column="goods_image"/>
+        <result property="stockImage" column="stock_image"/>
+        <result property="variationName" column="variation_name"/>
+        <result property="photograph" column="photograph"/>
+        <result property="status" column="status"/>
+        <result property="itemSku" column="itemSku"/>
+        <result property="price" column="price"/>
+    </resultMap>
+
+    <sql id="selectUserPackageVo">
+        select package.*  from user_package package
+    </sql>
+
+    <select id="selectUserPackageList" parameterType="UserPackage" resultMap="UserPackageResult">
+        <include refid="selectUserPackageVo"/>
+        left join sys_user u on package.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            <if test="packageNo != null  and packageNo != ''">and package.package_no like concat('%', #{packageNo}, '%')</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">and package.shopee_order_no = #{shopeeOrderNo}</if>
+            <if test="goodsName != null  and goodsName != ''">and package.goods_name like concat('%', #{goodsName}, '%')</if>
+            <if test="categoryName != null  and categoryName != ''">and package.category_name like concat('%', #{categoryName}, '%')</if>
+            <if test="goodsImage != null  and goodsImage != ''">and package.goods_image = #{goodsImage}</if>
+            <if test="stockImage != null ">and package.stock_image = #{stockImage}</if>
+            <if test="status != null ">and package.status = #{status}</if>
+            <if test="params.dataScope != null and params.dataScope !=''">${params.dataScope}</if>
+        </where>
+        order by package.id DESC
+    </select>
+    <select id="selectUserPackageByPackageNo" resultMap="UserPackageResult">
+        <include refid="selectUserPackageVo"/>
+        <where>
+            <if test="packageNo != null  and packageNo != ''">and package.package_no=#{packageNo}</if>
+            <if test="status != null ">and package.status = #{status}</if>
+        </where>
+        order by package.id DESC
+    </select>
+    <select id="selectUserPackageById" parameterType="Long" resultMap="UserPackageResult">
+        <include refid="selectUserPackageVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertUserPackage" parameterType="UserPackage" useGeneratedKeys="true" keyProperty="id">
+        insert into user_package
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="packageNo != null  and packageNo != ''">package_no,</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no,</if>
+            <if test="categoryName != null  and categoryName != ''">category_name,</if>
+            <if test="goodsCount != null  and goodsCount != ''">goods_count,</if>
+            <if test="goodsName != null  and goodsName != ''">goods_name,</if>
+            <if test="goodsImage != null  and goodsImage != ''">goods_image,</if>
+            <if test="stockImage != null ">stock_image,</if>
+            <if test="variationName != null ">variation_name,</if>
+            <if test="photograph != null ">photograph,</if>
+            <if test="status != null ">status,</if>
+            <if test="itemSku != null  and itemSku != ''">itemSku,</if>
+            <if test="price != null  and price != ''">price,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="packageNo != null  and packageNo != ''">#{packageNo},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">#{shopeeOrderNo},</if>
+            <if test="categoryName != null  and categoryName != ''">#{categoryName},</if>
+            <if test="goodsCount != null  and goodsCount != ''">#{goodsCount},</if>
+            <if test="goodsName != null  and goodsName != ''">#{goodsName},</if>
+            <if test="goodsImage != null  and goodsImage != ''">#{goodsImage},</if>
+            <if test="stockImage != null ">#{stockImage},</if>
+            <if test="variationName != null ">#{variationName},</if>
+            <if test="photograph != null ">#{photograph},</if>
+            <if test="status != null ">#{status},</if>
+            <if test="itemSku != null  and itemSku != ''">#{itemSku},</if>
+            <if test="price != null  and price != ''">#{price},</if>
+        </trim>
+    </insert>
+
+    <update id="updateUserPackage" parameterType="UserPackage">
+        update user_package
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="packageNo != null  and packageNo != ''">package_no = #{packageNo},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no = #{shopeeOrderNo},</if>
+            <if test="categoryName != null  and categoryName != ''">category_name = #{categoryName},</if>
+            <if test="goodsCount != null  and goodsCount != ''">goods_count = #{goodsCount},</if>
+            <if test="goodsName != null  and goodsName != ''">goods_name = #{goodsName},</if>
+            <if test="goodsImage != null  and goodsImage != ''">goods_image = #{goodsImage},</if>
+            <if test="stockImage != null ">stock_image = #{stockImage},</if>
+            <if test="variationName != null ">variation_name = #{variationName},</if>
+            <if test="status != null ">variation_name = #{status},</if>
+            <if test="itemSku != null  and itemSku != ''">itemSku = #{itemSku},</if>
+            <if test="price != null  and price != ''">price = #{price},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteUserPackageById" parameterType="Long">
+        delete from user_package where id = #{id}
+    </delete>
+
+    <delete id="deleteUserPackageByIds" parameterType="String">
+        delete from user_package where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <select id="selectByShopeeOrderNo" resultMap="UserPackageResult">
+        <include refid="selectUserPackageVo"/>
+        <where>
+            shopee_order_no = #{shopeeOrderNo}
+        </where>
+    </select>
+    <select id="selectByShopeeOrderNoNotNull" resultMap="UserPackageResult">
+        <include refid="selectUserPackageVo"/>
+        <where>
+            shopee_order_no = #{shopeeOrderNo} AND package_no is not null
+        </where>
+    </select>
+    <update id="updatePackageNoById">
+        update user_package
+        set package_no = #{packageNo}
+        where id = #{id}
+    </update>
+    <update id="updateStockImage">
+        update user_package
+        set stock_image = #{stockImage},status=${status}
+        where id = #{id}
+    </update>
+    <delete id="deleteUserPackageByShopeeOrderNo" parameterType="String">
+        delete from user_package where shopee_order_no = #{shopeeOrderNo}
+    </delete>
+</mapper>

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.aboutme.mapper.HdAboutmeMapper">
+    
+    <resultMap type="HdAboutme" id="HdAboutmeResult">
+        <result property="id"    column="id"    />
+        <result property="addr"    column="addr"    />
+        <result property="user"    column="user"    />
+        <result property="phone"    column="phone"    />
+        <result property="qq"    column="qq"    />
+        <result property="weixin"    column="weixin"    />
+    </resultMap>
+
+    <sql id="selectHdAboutmeVo">
+        select id, addr, user, phone, qq, weixin from hd_aboutme
+    </sql>
+
+    <select id="selectHdAboutmeList" parameterType="HdAboutme" resultMap="HdAboutmeResult">
+        <include refid="selectHdAboutmeVo"/>
+        <where>  
+            <if test="addr != null  and addr != ''"> and addr = #{addr}</if>
+            <if test="user != null  and user != ''"> and user = #{user}</if>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="qq != null  and qq != ''"> and qq = #{qq}</if>
+            <if test="weixin != null  and weixin != ''"> and weixin = #{weixin}</if>
+        </where>
+    </select>
+    
+    <select id="selectHdAboutmeById" parameterType="Long" resultMap="HdAboutmeResult">
+        <include refid="selectHdAboutmeVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertHdAboutme" parameterType="HdAboutme">
+        insert into hd_aboutme
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null ">id,</if>
+            <if test="addr != null  and addr != ''">addr,</if>
+            <if test="user != null  and user != ''">user,</if>
+            <if test="phone != null  and phone != ''">phone,</if>
+            <if test="qq != null  and qq != ''">qq,</if>
+            <if test="weixin != null  and weixin != ''">weixin,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null ">#{id},</if>
+            <if test="addr != null  and addr != ''">#{addr},</if>
+            <if test="user != null  and user != ''">#{user},</if>
+            <if test="phone != null  and phone != ''">#{phone},</if>
+            <if test="qq != null  and qq != ''">#{qq},</if>
+            <if test="weixin != null  and weixin != ''">#{weixin},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHdAboutme" parameterType="HdAboutme">
+        update hd_aboutme
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="addr != null  and addr != ''">addr = #{addr},</if>
+            <if test="user != null  and user != ''">user = #{user},</if>
+            <if test="phone != null  and phone != ''">phone = #{phone},</if>
+            <if test="qq != null  and qq != ''">qq = #{qq},</if>
+            <if test="weixin != null  and weixin != ''">weixin = #{weixin},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHdAboutmeById" parameterType="Long">
+        delete from hd_aboutme where id = #{id}
+    </delete>
+
+    <delete id="deleteHdAboutmeByIds" parameterType="String">
+        delete from hd_aboutme where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

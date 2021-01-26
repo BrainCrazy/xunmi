@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('订单详情')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <form id="formId">
+        <input type="hidden" name="shopeeOrderNo" th:value="${shopeeOrderNo}">
+    </form>
+    <h3 style="text-align: center">以下为该订单需要发送的商品信息,提交后不可撤回</h3>
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/unpackage";
+    $(function () {
+        var options = {
+            url: prefix + "/orderDetail",
+            search: false,
+            showToggle: false,
+            showRefresh: false,
+            showSearch: false,
+            columns: [
+                {
+                    field: 'goodsImage',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                },
+                {
+                    field: 'id',
+                    title: '商品id'
+                },
+                {
+                    field: 'userId',
+                    title: '用户id',
+                },
+                {
+                    field: 'categoryName',
+                    title: '分类'
+                },
+                {
+                    field: 'goodsName',
+                    title: '名称'
+                },
+                {
+                    field: 'variationName',
+                    title: '规格'
+                },
+                {
+                    field: 'goodsCount',
+                    title: '数量'
+                },
+                {
+                    field: 'packageNo',
+                    title: '运单号'
+                }]
+        };
+        $.table.init(options);
+    });
+
+    function submitHandler() {
+        $.operate.save(prefix + "/userSubmitOrder", $('#formId').serialize(), function (result) {
+            $.modal.msgSuccess(result.msg);
+        });
+    }
+</script>
+</body>
+</html>

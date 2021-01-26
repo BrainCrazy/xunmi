@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('用户快递列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>快递单号：</p>
+                            <input type="text" name="packageNo" id="packageNo"/>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" id="userPackageSearch"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" id="userPackageReset"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var prefix = ctx + "system/userpackage";
+    var OutStockFlag = [[${@permission.hasPermi('system:unpackage:confirmStock')}]];
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/toStockImage/{id}",
+            modalName: "用户快递",
+            firstLoad: false,
+            pagination: false,
+            columns: [{
+                checkbox: true
+            }, {
+                field: 'packageNo',
+                title: '快递单号'
+            }, {
+                field: 'shopeeOrderNo',
+                title: '虾皮订单号'
+            }, {
+                field: 'goodsImage',
+                title: '缩略图',
+                formatter: function (value, row, index) {
+                    return $.table.imageView(value, '800px', '800px');
+                }
+            }, {
+                field: 'goodsName',
+                title: '商品名称'
+            }, {
+                field: 'variationName',
+                title: '规格'
+            }, {
+                field: 'goodsCount',
+                title: '商品数量'
+            }, {
+                field: 'status',
+                title: '状态',
+                formatter: function (value, row, index) {
+                    if (10 == value) {
+                        return "待入库";
+                    } else if (20 == value) {
+                        return "已入库";
+                    } else {
+                        return "";
+                    }
+                }
+            }, {
+                field: 'stockImage',
+                title: '仓库图片',
+                formatter: function (value, row, index) {
+                    return $.table.imageView(value, '800px', '800px');
+                }
+            }, {
+                field: 'photograph',
+                title: '是否拍照确认',
+                formatter: function (value, row, index) {
+                    if (20 == value) {
+                        return "需要";
+                    } else {
+                        return "不需要";
+                    }
+                }
+            }, {
+                field: 'orderType',
+                title: '订单类型',
+                formatter: function (value, row, index) {
+                    if (10 == value) {
+                        return "拆包订单";
+                    } else if (20 == value) {
+                        return "纯贴面单";
+                    } else {
+                        return "库存补货";
+                    }
+                }
+            }, {
+                title: '操作',
+                align: 'center',
+                formatter: function (value, row, index) {
+                    var actions = [];
+                    if (10 == row.status) {
+                        var param = row.id + "-" + row.photograph + "-" + row.orderType;
+                        actions.push('<a class="yellowColor ' + OutStockFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + param + '\')">确认入库</a> ');
+                    }
+                    return actions.join('');
+                }
+            }]
+        };
+        $.table.init(options);
+    });
+    $('#userPackageSearch').click(function () {
+        if ($.trim($('#packageNo').val()) == '') {
+            $.modal.msgError("请输入运单号后搜索");
+        } else {
+            $.table.search();
+        }
+    });
+    $('#userPackageReset').click(function () {
+        $('#packageNo').val('');
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html  lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    
+    <title>屹轩国际物流</title>
+    <meta name="description" content="若依后台管理框架">
+    <link href="../static/css/bootstrap.min.css" th:href="@{/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/css/font-awesome.min.css" th:href="@{/css/font-awesome.min.css}" rel="stylesheet"/>
+    <link href="../static/css/style.css" th:href="@{/css/style.css}" rel="stylesheet"/>
+    <link href="../static/css/login.min.css" th:href="@{/css/login.min.css}" rel="stylesheet"/>
+    <link href="../static/ruoyi/css/ry-ui.css" th:href="@{/ruoyi/css/ry-ui.css?v=4.0.0}" rel="stylesheet"/>
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+    <link rel="shortcut icon" href="../static/favicon.ico" th:href="@{favicon.ico}"/>
+    <style type="text/css">label.error { position:inherit;  }</style>
+    <script>
+        if(window.top!==window.self){window.top.location=window.location};
+    </script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html,
+        body {
+            height: 100%;
+        }
+
+        body {
+            width: 100%;
+            min-width: 1200px;
+            height: 100%;
+            background: url(./img/bg2.png) no-repeat;
+            background-size: 100% 100%;
+        }
+
+
+        .login_a {
+            width: 730px;
+            background: url(./img/bg1.png) no-repeat;
+            background-size: 100% 100%;
+            margin: 0 auto;
+
+            padding-top: 63px;
+            padding-bottom: 50px;
+        }
+
+        .a_a {
+            width: 523px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .line {
+            width: 150px;
+            height: 1px;
+            background: #fff;
+        }
+
+        .welcome {
+            font-size: 44px;
+            font-weight: bold;
+            color: rgba(255, 255, 255, 1);
+        }
+
+        .a_b {
+            font-size: 22px;
+            color: rgba(255, 255, 255, 1);
+            text-align: center;
+            margin: 35px 0;
+        }
+
+        .a_c {
+            width: 301px;
+            height: 40px;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 4px 4px 4px 4px;
+            display: flex;
+            align-items: center;
+            margin: 0 auto;
+            margin-bottom: 13px;
+        }
+
+        .a_c>img {
+            width: 19px;
+            height: 19px;
+            margin-left: 15px;
+            margin-right: 11px;
+        }
+
+        .a_c>input {
+            outline: none;
+            height: 100%;
+            border: none;
+            color: #333;
+        }
+
+        #btnSubmit1,#aaa {
+            width: 301px;
+            height: 40px;
+            line-height: 40px;
+            background: rgba(0, 198, 255, 1);
+            border-radius: 4px 4px 4px 4px;
+            font-size: 18px;
+            text-align: center;
+            border: none;
+            color: rgba(255, 255, 255, 1);
+            position: relative;
+            left: 50%;
+            transform: translateX(-50%);
+            margin-top: 53px;
+        }
+        .a_d{
+            width: 301px;
+            height: 40px;
+            margin:0 auto;
+            display: flex;
+            justify-content: space-between;
+        }
+        .a_d>input{
+            width: 100px;
+            height: 100%;
+            border:none;
+            outline: none;
+            border-radius: 4px 4px 4px 4px;
+            padding-left:15px;
+        }
+        .a_f{
+            width:301px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+        .a_e {
+            width:200px;
+            height: 40px;
+            background: rgba(255, 255, 255, 1);
+            border-radius: 4px 4px 4px 4px;
+            display: flex;
+            align-items: center;
+        }
+        .a_e>img {
+            width: 20px;
+            height: 20px;
+            margin-left: 15px;
+            margin-right: 11px;
+        }
+
+        .a_e>input {
+            outline: none;
+            height: 100%;
+            border: none;
+            color: #333;
+        }
+        .a_f>button{
+            width:100px;
+            height: 40px;
+            line-height: 40px;
+            background: rgba(0, 198, 255, 1);
+            border-radius: 4px 4px 4px 4px;
+            font-size: 18px;
+            text-align: center;
+            border: none;
+            color: rgba(255, 255, 255, 1);
+        }
+    </style>
+</head>
+
+<body class="signin">
+
+    <div class="signinpanel" >
+        <div class="login">
+            <div class="login_a">
+        <!--<div class="row">-->
+            <!--<div class="col-sm-6">-->
+                <form id="signupForm">
+                    <div class="a_a">
+                        <p class="line"></p>
+                        <p class="welcome">Welcome</p>
+                        <p class="line"></p>
+                    </div>
+                    <p class="a_b">欢迎登录跨境卖家代理发货系统</p>
+                    <div class="a_c">
+                        <img th:src="@{/img/eaa (2).png}"  alt="">
+                        <input type="text"  class="msgCodeInput1" name="phonenumber"  placeholder="请输入手机号">
+                    </div>
+                    <div class="a_c">
+                        <img th:src="@{/img/Lock.png}"  alt="" style="width:17px;height: 20px;">
+                        <input type="password"  name="password" placeholder="请输入新密码">
+                    </div>
+                    <div class="a_c">
+                        <img th:src="@{/img/Lock.png}"  alt="" style="width:17px;height: 20px;">
+                        <input type="password"  name="password1" placeholder="请确定新密码">
+                    </div>
+                    <div class="a_f">
+                    <div class="a_e">
+                        <img th:src="@{/img/abc.png}"  alt="">
+                        <input type="text" placeholder="请输入验证码" class="register-input2"  >
+                    </div>
+                        <button class="sendBtn" style="text-align:center;" onclick="sendMsg(this,$('.msgCodeInput1').val())">发送验证码</button>
+                    </div>
+                    <!--<div class="a_d" th:if="${captchaEnabled==true}">-->
+                        <!--<input type="text" name="validateCode" class="code" placeholder="验证码" maxlength="5" autocomplete="off">-->
+
+                        <!--<div >-->
+                            <!--<a href="javascript:void(0);" title="点击更换验证码">-->
+                                <!--<img th:src="@{captcha/captchaImage(type=${captchaType})}" class="imgcode" style="width:150px;height: 40px;"/>-->
+                            <!--</a>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                    <!--<div class="checkbox-custom" th:classappend="${captchaEnabled==false} ? 'm-t'">-->
+                        <!--<input type="checkbox" id="rememberme" name="rememberme"> <label for="rememberme">记住我</label>-->
+                    <!--</div>-->
+                    <button  id="btnSubmit1" data-loading="正在修改，请稍后...">修改密码</button>
+                </form>
+                <button  id="aaa" >登&nbsp;&nbsp;录</button>
+            </div>
+        </div>
+            <!--</div>-->
+        <!--</div>-->
+    </div>
+<script th:inline="javascript"> var ctx = [[@{/}]]; var captchaType = [[${captchaType}]]; </script>
+<!-- 全局js -->
+<script src="../static/js/jquery.min.js" th:src="@{/js/jquery.min.js}"></script>
+<script src="../static/js/bootstrap.min.js" th:src="@{/js/bootstrap.min.js}"></script>
+<!-- 验证插件 -->
+<script src="../static/ajax/libs/validate/jquery.validate.min.js" th:src="@{/ajax/libs/validate/jquery.validate.min.js}"></script>
+<script src="../static/ajax/libs/validate/messages_zh.min.js" th:src="@{/ajax/libs/validate/messages_zh.min.js}"></script>
+<script src="../static/ajax/libs/layer/layer.min.js" th:src="@{/ajax/libs/layer/layer.min.js}"></script>
+<script src="../static/ajax/libs/blockUI/jquery.blockUI.js" th:src="@{/ajax/libs/blockUI/jquery.blockUI.js}"></script>
+<script src="../static/ruoyi/js/ry-ui.js" th:src="@{/ruoyi/js/ry-ui.js?v=4.0.0}"></script>
+<script src="../static/ruoyi/register.js" th:src="@{/ruoyi/wangjimima.js}"></script>
+    <script>
+        $("#aaa").click(function f() {
+            // $.get(ctx + "register",function(){
+            //
+            // });
+            window.location.href = ctx + 'login'
+        })
+    </script>
+</body>
+</html>

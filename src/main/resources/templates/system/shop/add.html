@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增授权店铺')"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-shop-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">shopId：</label>
+            <div class="col-sm-8">
+                <input id="shopId" name="shopId" class="form-control" type="text">
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<script type="text/javascript">
+    var prefix = ctx + "system/shop"
+    $("#form-shop-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        if ($.validate.form()) {
+            // var host = window.location.href;
+            const host = "http://www.lovesleepbear.com";
+            const shopId = $("#shopId").val();
+            if (shopId == null || shopId === "") {
+                $.modal.alertWarning("shopId为必填选项");
+            } else {
+                var url = prefix + "/create/authorization/url?shopId=" + shopId + "&host=" + host;
+                $.ajax({
+                    type: 'POST',
+                    url: url,
+                    processData: false,   // jQuery不要去处理发送的数据
+                    contentType: false,   // jQuery不要去设置Content-Type请求头
+                    success: function (result) {
+                        if (result.code == 0) {
+                            // window.location.href = result.data;
+                            window.open(result.data);
+                            $.modal.close();
+                        } else {
+                            $.modal.alertWarning(result.msg);
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+</body>
+</html>

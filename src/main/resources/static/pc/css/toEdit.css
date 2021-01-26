@@ -1,0 +1,70 @@
+.order-table th{
+    text-align: right;
+}
+
+.order-table td{
+    text-align: left;
+}
+
+.cbes-amount {
+    text-align: right;
+}
+
+.orderinfo-modify {
+    color: green;
+    display:block;
+    line-height:20px;
+    height:20px;
+    margin-right: 10px;
+}
+.shop_input_edit{
+    border:none;
+    outline: none;
+    background: rgb(249,249,249);
+}
+.do_c{
+    display: none;
+}
+.do_c>button{
+    color: green;
+    margin-top:5px;
+    margin-left:10px;
+}
+input[type="file"]{
+    top: 0;
+    left: 0;
+    min-width: 100%;
+    min-height: 100%;
+    text-align: right;
+    background: none;
+    cursor: inherit;
+    opacity: 0;
+    display: block;
+    position: absolute;
+    top: 0px;
+    z-index: 1000;
+}
+.input_change{
+    display: flex;
+}
+.input_change{
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    position: absolute;
+    top: 0px;
+    width: 93.2%;
+}
+.input_change_input1{
+    border:0;
+    border-radius: 4px;
+}
+.input_change>input[type="button"]{
+    border:0;
+    border-radius: 0px;
+    color: #fff;
+    background-color: #337ab7;
+    padding: 0 5px;
+}
+.upload_file{
+    
+}

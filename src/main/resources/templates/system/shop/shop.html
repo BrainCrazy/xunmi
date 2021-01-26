@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('授权店铺列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>店铺名称：</p>
+                            <input type="text" name="shopName"/>
+                        </li>
+                        <li>
+                            <p>国家编码：</p>
+                            <input type="text" name="countryCode"/>
+                        </li>
+                        <!--                        <li>-->
+                        <!--                            <p>用户id：</p>-->
+                        <!--                            <input type="text" name="userId"/>-->
+                        <!--                        </li>-->
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btnClass" onclick="authorization()" shiro:hasPermission="system:shop:add">新增授权
+            </a>
+            <a class="btn btnClass" onclick="$.operate.edit()" shiro:hasPermission="system:shop:edit">修改
+            </a>
+            <a class="btn btnClass" onclick="$.operate.removeAll()" shiro:hasPermission="system:shop:remove">删除
+            </a>
+            <a class="btn btnClass" onclick="$.table.exportExcel()" shiro:hasPermission="system:shop:export">导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+    <input id="pageMsg" th:value="${msg}" type="hidden">
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:shop:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:shop:remove')}]];
+    var prefix = ctx + "system/shop";
+
+    $(function () {
+        let msg = $("#pageMsg").val();
+        if (msg != null && "" !== msg) {
+            alert(msg);
+            const pathName = window.location.pathname;
+            const projectName = pathName.substring(0, pathName.substr(1).indexOf('/') + 1);
+            // window.location.href = window.location.origin + projectName;
+            window.location.href = window.location.origin;
+        }
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "授权店铺",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'shopId',
+                    title: '店铺id',
+                    visible: false
+                },
+                {
+                    field: 'shopName',
+                    title: '店铺名称'
+                },
+                {
+                    field: 'countryCode',
+                    title: '国家编码'
+                },
+                {
+                    field: 'userId',
+                    title: '用户id'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="yellowColor' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.shopId + '\')"><button class="fa fa-trash">删除</button></a>');
+                        actions.push('<a class="yellowColor' + editFlag + '" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.shopId + '\')"><button class="fa fa-cogs">编辑</button></a>');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+
+
+    function authorization() {
+        const host = window.location.href;
+        // const host = "http://www.lovesleepbear.com";
+        const url = prefix + "/create/authorization/url?host=" + host;
+        $.ajax({
+            type: 'POST',
+            url: url,
+            processData: false,   // jQuery不要去处理发送的数据
+            contentType: false,   // jQuery不要去设置Content-Type请求头
+            success: function (result) {
+                if (result.code == 0) {
+                    // window.location.href = result.data;
+                    window.open(result.data);
+                    $.modal.close();
+                } else {
+                    $.modal.alertWarning(result.msg);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

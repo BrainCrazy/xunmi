@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.dengji.mapper.HdDengjiMapper">
+    
+    <resultMap type="HdDengji" id="HdDengjiResult">
+        <result property="id"    column="id"    />
+        <result property="name"    column="name"    />
+        <result property="price"    column="price"    />
+        <result property="createTime"    column="create_time"    />
+    </resultMap>
+
+    <sql id="selectHdDengjiVo">
+        select id, name, price, create_time from hd_dengji
+    </sql>
+
+    <select id="selectHdDengjiList" parameterType="HdDengji" resultMap="HdDengjiResult">
+        <include refid="selectHdDengjiVo"/>
+        <where>  
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+            <if test="price != null "> and price = #{price}</if>
+        </where>
+    </select>
+    
+    <select id="selectHdDengjiById" parameterType="Long" resultMap="HdDengjiResult">
+        <include refid="selectHdDengjiVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertHdDengji" parameterType="HdDengji" useGeneratedKeys="true" keyProperty="id">
+        insert into hd_dengji
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">name,</if>
+            <if test="price != null ">price,</if>
+            <if test="createTime != null ">create_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="name != null  and name != ''">#{name},</if>
+            <if test="price != null ">#{price},</if>
+            <if test="createTime != null ">#{createTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateHdDengji" parameterType="HdDengji">
+        update hd_dengji
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="name != null  and name != ''">name = #{name},</if>
+            <if test="price != null ">price = #{price},</if>
+           create_time = now(),
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteHdDengjiById" parameterType="Long">
+        delete from hd_dengji where id = #{id}
+    </delete>
+
+    <delete id="deleteHdDengjiByIds" parameterType="String">
+        delete from hd_dengji where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    
+</mapper>

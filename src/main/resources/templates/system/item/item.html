@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('商品明细列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>店铺id：</p>
+                            <input type="text" name="shopId"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="name"/>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <a class="btn btnClass" onclick="$.operate.add()" shiro:hasPermission="system:item:add">添加
+            </a>
+            <a class="btn btnClass" onclick="$.operate.edit()" shiro:hasPermission="system:item:edit">修改
+            </a>
+            <a class="btn btnClass" onclick="$.operate.removeAll()" shiro:hasPermission="system:item:remove">删除
+            </a>
+            <a class="btn btnClass" onclick="$.table.exportExcel()" shiro:hasPermission="system:item:export">导出
+            </a>
+        </div>
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:item:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:item:remove')}]];
+    var prefix = ctx + "system/item";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "商品明细",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'itemId',
+                    title: '商品id',
+                    visible: false
+                },
+                {
+                    field: 'shopId',
+                    title: '店铺id'
+                },
+                {
+                    field: 'userId',
+                    title: '用户id'
+                },
+                {
+                    field: 'itemSku',
+                    title: '商品sku'
+                },
+                {
+                    field: 'status',
+                    title: '状态'
+                },
+                {
+                    field: 'name',
+                    title: '商品名称'
+                },
+                {
+                    field: 'description',
+                    title: '商品描述',
+                    visible: false
+                },
+                {
+                    field: 'currency',
+                    title: '货币单位，三位代码'
+                },
+                {
+                    field: 'price',
+                    title: '价格'
+                },
+                {
+                    field: 'itemCreateTime',
+                    title: '商品创建时间'
+                },
+                {
+                    field: 'itemUpdateTime',
+                    title: '商品修改时间'
+                },
+                {
+                    field: 'categoryName',
+                    title: '分类名称'
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        actions.push('<a class="yellowColor' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.itemId + '\')"><button class="fa fa-trash">删除</button></a>');
+                        actions.push('<a class="yellowColor' + editFlag + '" href="javascript:void(0)" onclick="$.operate.updateItem(\'' + row.itemId + '\')"><button class="fa fa-cogs">更新商品</button></a> ');
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

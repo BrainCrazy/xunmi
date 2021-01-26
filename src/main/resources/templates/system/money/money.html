@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('用户余额变动列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="btn-group-sm" id="toolbar" role="group">
+            <h3>用户名：[[${username}]]</h3>
+            <h3>用户余额：[[${usermoney}]] <input type="button" class="btn btnClass" th:value="去充值" id="recharge"/></h3>
+        </div>
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li>
+                            <p>用户ID：</p>
+                            <input type="text" name="userId"/>
+                        </li>
+                        <li>
+                            <p>用户名称：</p>
+                            <input type="text" name="userName"/>
+                        </li>
+                        <li>
+                            <p>变动类型：</p>
+                            <select name="changeType">
+                                <option value="">所有</option>
+                                <option value="10">用户下单</option>
+                                <option value="20">用户充值</option>
+                            </select>
+                        </li>
+                        <li class="select-time">
+                            <label>变动日期： </label>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
+                                   name="params[beginTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
+                                   name="params[endTime]"/>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var editFlag = [[${@permission.hasPermi('system:money:edit')}]];
+    var removeFlag = [[${@permission.hasPermi('system:money:remove')}]];
+    var prefix = ctx + "system/money";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            createUrl: prefix + "/add",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove",
+            exportUrl: prefix + "/export",
+            modalName: "用户余额变动",
+            columns: [
+                {
+                    field: 'userId',
+                    title: '用户ID',
+                },
+                {
+                    field: 'createTime',
+                    title: '变动日期'
+                },
+                {
+                    field: 'userName',
+                    title: '用户名称'
+                },
+                {
+                    field: 'amount',
+                    title: '变动金额',
+                    formatter: function (value, row, index) {
+                        return value / 100 + "元";
+                    }
+                },
+                {
+                    field: 'changeType',
+                    title: '变动类型',
+                    formatter: function (value, row, index) {
+                        if (value == 10) {
+                            return "用户下单";
+                        } else if (value == 20) {
+                            return "用户充值";
+                        } else return "";
+                    }
+                },
+                {
+                    field: 'balance',
+                    title: '当前余额',
+                    formatter: function (value, row, index) {
+                        return value / 100 + "元";
+                    }
+                },
+                {
+                    field: 'status',
+                    title: '充值状态',
+                    formatter: function (value, row, index) {
+                        if (value == 10) {
+                            return "待支付";
+                        } else if (value == 20) {
+                            return "支付成功";
+                        } else return "";
+                    }
+                }, {
+                    field: 'remark',
+                    title: '备注'
+                },]
+        };
+        $.table.init(options);
+    });
+    $("#recharge").click(function () {
+        var url = prefix + '/chongzhi';
+        createMenuItem(url, "支付");
+    });
+</script>
+</body>
+</html>

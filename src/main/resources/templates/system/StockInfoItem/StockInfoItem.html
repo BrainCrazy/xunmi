@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <th:block th:include="include :: header('库存明细列表')"/>
+</head>
+<body class="gray-bg">
+<div class="container-div">
+    <div class="row">
+        <div class="col-sm-12 search-collapse">
+            <form id="formId">
+                <div class="select-list">
+                    <ul>
+                        <li class="select-time">
+                            <p>创建时间：</p>
+                            <input type="text" class="time-input" id="startTime" placeholder="开始时间"
+                                   name="params[beginSysTime]"/>
+                            <span>-</span>
+                            <input type="text" class="time-input" id="endTime" placeholder="结束时间"
+                                   name="params[endSysTime]"/>
+                        </li>
+                        <li>
+                            <p>用户ID：</p>
+                            <input type="text" name="userId"/>
+                        </li>
+                        <li>
+                            <p>虾皮订单号：</p>
+                            <input type="text" name="shopeeOrderNo"/>
+                        </li>
+                        <li>
+                            <p>快递单号：</p>
+                            <input type="text" name="packageNo"/>
+                        </li>
+                        <li>
+                            <p>商品类别：</p>
+                            <input type="text" name="categoryName"/>
+                        </li>
+                        <li>
+                            <p>商品名称：</p>
+                            <input type="text" name="goodsName"/>
+                        </li>
+                        <li>
+                            <p>操作类型：</p>
+                            <select name="itemType"
+                                    th:with="type=${@dict.getType('item_type')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <p>状态：</p>
+                            <select name="stockItemStatus"
+                                    th:with="type=${@dict.getType('stock_item_status')}">
+                                <option value="">所有</option>
+                                <option th:each="dict : ${type}" th:text="${dict.dictLabel}"
+                                        th:value="${dict.dictValue}"></option>
+                            </select>
+                        </li>
+                        <li>
+                            <a class="btn btnClass" onclick="$.table.search()"><i class="fa fa-search"></i>&nbsp;搜索</a>
+                            <a class="btn btnClass4Reverse" onclick="$.form.reset()"><i class="fa fa-refresh"></i>&nbsp;重置</a>
+                        </li>
+                    </ul>
+                </div>
+            </form>
+        </div>
+
+        <div class="col-sm-12 select-table table-striped">
+            <table id="bootstrap-table" data-mobile-responsive="true"></table>
+        </div>
+    </div>
+</div>
+<th:block th:include="include :: footer"/>
+<script th:inline="javascript">
+    var confirmStock = [[${@permission.hasPermi('system:StockInfoItem:confirmStock')}]];
+    var removeFlag = [[${@permission.hasPermi('system:StockInfoItem:remove')}]];
+    var itemTypeDatas = [[${@dict.getType('item_type')}]];
+    var stockItemStatusDatas = [[${@dict.getType('stock_item_status')}]];
+    var prefix = ctx + "system/StockInfoItem";
+
+    $(function () {
+        var options = {
+            url: prefix + "/list",
+            updateUrl: prefix + "/edit/{id}",
+            removeUrl: prefix + "/remove/{id}",
+            confirmStockUrl: prefix + "/confirmStock/{id}",
+            modalName: "",
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: 'id',
+                    title: 'id',
+                    visible: false
+                },
+                {
+                    field: 'sysTime',
+                    title: '创建时间'
+                },
+                {
+                    field: 'userId',
+                    title: '用户ID'
+                },
+                {
+                    field: 'shopeeOrderNo',
+                    title: '虾皮订单号'
+                },
+                {
+                    field: 'packageNo',
+                    title: '快递单号'
+                },
+                {
+                    field: 'categoryName',
+                    title: '商品类别'
+                },
+                {
+                    field: 'goodsName',
+                    title: '商品名称'
+                },
+                {
+                    field: 'goodsImageUrl',
+                    title: '缩略图',
+                    formatter: function (value, row, index) {
+                        return $.table.imageView(value, '800px', '800px');
+                    }
+                },
+                {
+                    field: 'goodsCount',
+                    title: '商品数量'
+                },
+                {
+                    field: 'itemType',
+                    title: '操作类型',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(itemTypeDatas, value);
+                    }
+                },
+                {
+                    field: 'stockItemStatus',
+                    title: '状态',
+                    formatter: function (value, row, index) {
+                        return $.table.selectDictLabel(stockItemStatusDatas, value);
+                    }
+                },
+                {
+                    title: '操作',
+                    align: 'center',
+                    formatter: function (value, row, index) {
+                        var actions = [];
+                        var param = row.id + "-" + row.itemType;
+                        if (row.stockItemStatus == 10 && row.itemType == 20) {
+                            actions.push('<a class="yellowColor inlineMargin' + removeFlag + '" href="javascript:void(0)" onclick="$.operate.remove(\'' + row.id + '\')"><i class="fa fa-trash"></i>删除</a>');
+                            actions.push('<a class="yellowColor inlineMargin" href="javascript:void(0)" onclick="$.operate.edit(\'' + row.id + '\')">修改</a>');
+                            actions.push('<a class="yellowColor inlineMargin' + confirmStock + '" href="javascript:void(0)" onclick="$.operate.confirmStock(\'' + param + '\')">确认入库</a> ');
+                        }
+                        if (row.stockItemStatus == 10 && row.itemType == 10) {
+                            actions.push('<a class="yellowColor inlineMargin' + confirmStock + '" href="javascript:void(0)" onclick="$.operate.confirmStock(\'' + param + '\')">确认出库</a> ');
+                        }
+                        return actions.join('');
+                    }
+                }]
+        };
+        $.table.init(options);
+    });
+</script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+	<th:block th:include="include :: header('修改通知公告')" />
+	<th:block th:include="include :: summernote-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-notice-edit" th:object="${notice}">
+            <input id="noticeId" name="noticeId" th:field="*{noticeId}"  type="hidden">
+
+            <div class="form-group">	
+                <div class="col-sm-12">
+                    <input id="noticeContent" name="noticeContent" th:field="*{noticeContent}" type="hidden">
+                    <div id="editor" class="summernote"></div>
+                </div>
+            </div>
+		</form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: summernote-js" />
+    <script type="text/javascript">
+	    $(function() {
+		    $('.summernote').summernote({
+		    	height : 192,
+				lang : 'zh-CN',
+				followingToolbar: false,
+                toolbar:[],
+                fullscreen: 'Fullscreen',
+		    });
+			var content = $("#noticeContent").val();
+		    $('#editor').summernote('code', content);
+            $('#editor').summernote('disable');
+	    });
+	</script>
+</body>
+</html>

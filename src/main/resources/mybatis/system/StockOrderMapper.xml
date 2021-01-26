@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.project.system.stockOrder.mapper.StockOrderMapper">
+
+    <resultMap type="com.ruoyi.project.system.stockOrder.domain.StockOrder" id="StockOrderResult">
+        <result property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="shopeeOrderNo" column="shopee_order_no"/>
+        <result property="authNumber" column="auth_number"/>
+        <result property="createTime" column="create_time"/>
+        <result property="orderStatus" column="order_status"/>
+        <result property="goodImage" column="good_image"/>
+        <result property="items" column="items"/>
+        <result property="amount" column="amount"/>
+        <result property="country" column="country"/>
+        <result property="lastedSendTime" column="lasted_send_time"/>
+        <result property="shippingCarrier" column="shipping_carrier"/>
+        <result property="remark" column="remark"/>
+    </resultMap>
+
+    <sql id="selectStockOrderVo">
+        select StockOrder.* from stock_order StockOrder
+    </sql>
+
+    <select id="selectStockOrderList" parameterType="StockOrder" resultMap="StockOrderResult">
+        <include refid="selectStockOrderVo"/>
+        left join sys_user u on StockOrder.user_id = u.user_id
+        left join sys_dept d on u.dept_id = d.dept_id
+        <where>
+            <if test="userId != null ">and StockOrder.user_id = #{userId}</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">and StockOrder.shopee_order_no = #{shopeeOrderNo}</if>
+            <if test="authNumber != null  and authNumber != ''">and StockOrder.auth_number = #{authNumber}</if>
+            <if test="createTime != null ">and StockOrder.create_time = #{createTime}</if>
+            <if test="orderStatus != null ">and StockOrder.order_status = #{orderStatus}</if>
+            <if test="params.beginCreateTime != null and params.beginCreateTime !=''">and DATE (create_time) &gt;= #{params.beginCreateTime}</if>
+            <if test="params.endCreateTime != null and params.endCreateTime !=''">and DATE (create_time) &lt;= #{params.endCreateTime}</if>
+            <if test="params.dataScope != null and params.dataScope !=''">  ${params.dataScope}</if>
+        </where>
+        order by StockOrder.id DESC
+    </select>
+
+    <select id="selectStockOrderById" parameterType="Long" resultMap="StockOrderResult">
+        <include refid="selectStockOrderVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertStockOrder" parameterType="StockOrder" useGeneratedKeys="true" keyProperty="id">
+        insert into stock_order
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">user_id,</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no,</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number,</if>
+            <if test="createTime != null ">create_time,</if>
+            <if test="orderStatus != null ">order_status,</if>
+            <if test="goodImage != null  and goodImage != ''">good_image,</if>
+            <if test="items != null  and items != ''">items,</if>
+            <if test="amount != null  and amount != ''">amount,</if>
+            <if test="country != null  and country != ''">country,</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">shipping_carrier,</if>
+            <if test="remark != null  and remark != ''">remark,</if>
+            <if test="lastedSendTime != null ">lasted_send_time,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userId != null ">#{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">#{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">#{authNumber},</if>
+            <if test="createTime != null ">#{createTime},</if>
+            <if test="orderStatus != null ">#{orderStatus},</if>
+            <if test="goodImage != null  and goodImage != ''">#{goodImage},</if>
+            <if test="items != null  and items != ''">#{items},</if>
+            <if test="amount != null  and amount != ''">#{amount},</if>
+            <if test="country != null  and country != ''">#{country},</if>
+            <if test="shippingCarrier != null  and shippingCarrier != ''">#{shippingCarrier},</if>
+            <if test="remark != null  and remark != ''">#{remark},</if>
+            <if test="lastedSendTime != null ">#{lastedSendTime},</if>
+        </trim>
+    </insert>
+
+    <update id="updateStockOrder" parameterType="StockOrder">
+        update stock_order
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="userId != null ">user_id = #{userId},</if>
+            <if test="shopeeOrderNo != null  and shopeeOrderNo != ''">shopee_order_no = #{shopeeOrderNo},</if>
+            <if test="authNumber != null  and authNumber != ''">auth_number = #{authNumber},</if>
+            <if test="createTime != null ">create_time = #{createTime},</if>
+            <if test="orderStatus != null ">order_status = #{orderStatus},</if>
+            <if test="goodImage != null  and goodImage != ''">good_image = #{goodImage},</if>
+            <if test="items != null  and items != ''">items = #{items},</if>
+            <if test="amount != null  and amount != ''">amount = #{amount},</if>
+            <if test="country != null and country != ''">country = #{country},</if>
+            <if test="lastedSendTime != null ">lasted_send_time = #{lastedSendTime},</if>
+            <if test="shippingCarrier != null and shippingCarrier != ''">shipping_carrier = #{shippingCarrier},</if>
+            <if test="remark != null and remark != ''">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteStockOrderById" parameterType="Long">
+        delete from stock_order where id = #{id}
+    </delete>
+
+    <delete id="deleteStockOrderByIds" parameterType="String">
+        delete from stock_order where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateStatusByShopeeOrderNo">
+        update stock_order
+        set order_status = #{status}
+        where shopee_order_no = #{shopeeOrderNo}
+    </update>
+    <select id="selectByShopeeOrderNos" parameterType="String" resultMap="StockOrderResult">
+        <include refid="selectStockOrderVo"/>
+         where shopee_order_no in
+        <foreach collection="array" item="shopeeOrderNo" open="(" separator="," close=")">
+            #{shopeeOrderNo}
+        </foreach>
+    </select>
+
+</mapper>

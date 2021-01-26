@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:include="include :: header('新增待处理订单')"/>
+    <th:block th:include="include :: datetimepicker-css"/>
+</head>
+<body class="white-bg">
+<div class="wrapper wrapper-content animated fadeInRight ibox-content">
+    <form class="form-horizontal m" id="form-ship-add">
+        <div class="form-group">
+            <label class="col-sm-3 control-label">是否需要拍照确认：</label>
+            <div class="col-sm-8">
+                <!--                <input id="userId" name="userId" class="form-control" type="text">-->
+                <label><input class="form-control" type="radio" name="photograph" value="10"/>不需要</label>
+                <label><input class="form-control" type="radio" name="photograph" value="20"/>需要</label>
+            </div>
+        </div>
+    </form>
+</div>
+<th:block th:include="include :: footer"/>
+<th:block th:include="include :: datetimepicker-js"/>
+<script type="text/javascript">
+    var prefix = ctx + "system/ship"
+    $("#form-ship-add").validate({
+        focusCleanup: true
+    });
+
+    function submitHandler() {
+        // 获取链接数据
+        let orderType = getQueryVariable("orderType");
+        let ids = getQueryVariable("ids");
+        let photograph = $('#form-ship-add').serialize();
+        const data = {
+            "ids": ids,
+            "orderType": orderType,
+            "photograph": photograph
+        };
+        if ($.validate.form()) {
+            $.operate.saveModal(prefix + "/pushOrder", data);
+        }
+    }
+
+    function getQueryVariable(variable) {
+        var query = window.location.search.substring(1);
+        var vars = query.split("&");
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split("=");
+            if (pair[0] == variable) {
+                return pair[1];
+            }
+        }
+        return (false);
+    }
+</script>
+</body>
+</html>

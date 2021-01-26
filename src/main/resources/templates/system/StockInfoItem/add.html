@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org" >
+<head>
+    <th:block th:include="include :: header('新增库存明细')" />
+    <th:block th:include="include :: datetimepicker-css" />
+</head>
+<body class="white-bg">
+    <div class="wrapper wrapper-content animated fadeInRight ibox-content">
+        <form class="form-horizontal m" id="form-StockInfoItem-add">
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">创建时间：</label>
+                <div class="col-sm-8">
+                    <div class="input-group date">
+                        <span class="input-group-addon"><i class="fa fa-calendar"></i></span>
+                        <input name="sysTime" class="form-control" placeholder="yyyy-MM-dd" type="text">
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">用户ID：</label>
+                <div class="col-sm-8">
+                    <input name="userId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">stock_info表主键：</label>
+                <div class="col-sm-8">
+                    <input name="stockInfoId" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">虾皮订单号：</label>
+                <div class="col-sm-8">
+                    <input name="shopeeOrderNo" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">快递单号：</label>
+                <div class="col-sm-8">
+                    <input name="packageNo" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商品类别：</label>
+                <div class="col-sm-8">
+                    <input name="categoryName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商品名称：</label>
+                <div class="col-sm-8">
+                    <input name="goodsName" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">缩略图：</label>
+                <div class="col-sm-8">
+                    <input name="goodsImageUrl" class="form-control" type="text">
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">商品数量：</label>
+                <div class="col-sm-8">
+                    <input name="goodsCount" class="form-control" type="text" required>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">操作类型：</label>
+                <div class="col-sm-8">
+                    <select name="itemType" class="form-control m-b" th:with="type=${@dict.getType('item_type')}" required>
+                        <option th:each="dict : ${type}" th:text="${dict.dictLabel}" th:value="${dict.dictValue}"></option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">    
+                <label class="col-sm-3 control-label">状态：</label>
+                <div class="col-sm-8">
+                    <div class="radio-box" th:each="dict : ${@dict.getType('stock_item_status')}">
+                        <input type="radio" th:id="${'stockItemStatus_' + dict.dictCode}" name="stockItemStatus" th:value="${dict.dictValue}" th:checked="${dict.default}" required>
+                        <label th:for="${'stockItemStatus_' + dict.dictCode}" th:text="${dict.dictLabel}"></label>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <th:block th:include="include :: footer" />
+    <th:block th:include="include :: datetimepicker-js" />
+    <script type="text/javascript">
+        var prefix = ctx + "system/StockInfoItem"
+        $("#form-StockInfoItem-add").validate({
+            focusCleanup: true
+        });
+
+        function submitHandler() {
+            if ($.validate.form()) {
+                $.operate.save(prefix + "/add", $('#form-StockInfoItem-add').serialize());
+            }
+        }
+
+        $("input[name='sysTime']").datetimepicker({
+            format: "yyyy-mm-dd",
+            minView: "month",
+            autoclose: true
+        });
+    </script>
+</body>
+</html>
